@@ -10,6 +10,7 @@ A simple database, with GUI webframe to manage a fleet of vehicles or other obje
 ## Goals: 
 - To learn how to pull from files and add to them using an interface not only the commandline
 - To learn how to develop a streamlined interface to display what is asked for by the user
+- To learn what is required for a basic web application and to make it user friendly
 
 ## Requirements:
 *All software required for running will be found in the requirements.txt file. In order to gain these requirements run the below command in the directory with the requirements.txt file.* 
