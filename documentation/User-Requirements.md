@@ -1,7 +1,7 @@
 Product Perspective: The product is intended for a self mananged garage or a small business where one person will be using the system.
 
 Product Functions:
-- The product should allow for cars to be added
+- The product should allow for cars to be added (Car functional parts below)
     - An owner
     - Make and model
     - Milage
