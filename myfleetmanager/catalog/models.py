@@ -30,10 +30,7 @@ class VehicleType(models.Model):
 class CarMake(models.Model):
     """Model representing a make of a car (but not a specific car)."""
     manuName = models.CharField(max_length=20)
-    owner = models.ForeignKey('Owner', on_delete=models.RESTRICT, null=True)
-    # Foreign Key used because car can only have one owner, but owners can have multiple cars.
-    # Owner as a string rather than object because it hasn't been declared yet in file.
-
+    
     carModel = models.CharField(
         max_length=100, help_text="Enter a brief description of the Car(IE: Model)")
     
@@ -53,6 +50,10 @@ class CarMake(models.Model):
 class CarInstance(models.Model):
     """Model representing a specific car in the shop"""
     car = models.ForeignKey('CarMake', on_delete=models.RESTRICT, null=True)
+    owner = models.ForeignKey('Owner', on_delete=models.RESTRICT, null=True)
+    # Foreign Key used because car can only have one owner, but owners can have multiple cars.
+    # Owner as a string rather than object because it hasn't been declared yet in file.
+
     vinNum = models.CharField(max_length=17, help_text="Unique VIN for this particular vehicle in the garage")
     
     modelYear = models.CharField(max_length=4, help_text="What year is this model?")

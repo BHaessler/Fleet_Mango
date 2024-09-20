@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Car: {{ car.car }}</h1>
+
+  <p><strong>Owner:</strong> <a href="">{{ book.author }}</a></p>
+  <!-- author detail link not yet defined -->
+  <p><strong>Vin Num:</strong> {{ car.vinNum }}</p>
+  <p><strong>Car Make:</strong> {{ car.car}}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+
+    {% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
+from django.views import generic
 # Create your views here.
 
 def index(request):
@@ -22,3 +23,11 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
+
+class CarListView(generic.ListView):
+    model = CarInstance
+    context_object_name = 'car_list'
+    paginate_by = 10
+
+class CarDetailView(generic.DetailView):
+    model = CarMake
