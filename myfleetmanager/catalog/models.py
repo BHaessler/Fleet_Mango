@@ -52,10 +52,13 @@ class CarMake(models.Model):
 
 class CarInstance(models.Model):
     """Model representing a specific car in the shop"""
-    vinNum = models.CharField(max_length=17, help_text="Unique VIN for this particular car in the garage")
+    vinNum = models.CharField(max_length=17, help_text="Unique VIN for this particular vehicle in the garage")
     car = models.ForeignKey('CarMake', on_delete=models.RESTRICT, null=True)
     modelYear = models.CharField(max_length=4, help_text="What year is this model?")
-
+    color = models.CharField(max_length=50, help_text="What is the common name of the vehicle's color and also its paint code.")
+    license_plate = models.CharField(max_length=12, help_text="What is the plate for this vehicle")
+    
+    
     CAR_STATUS = (
         ('M', 'Maintenance'),
         ('O', 'Owner has vehicle in their possession'),
@@ -74,7 +77,7 @@ class CarInstance(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.vinNum} ({self.car.manuName})'
+        return f'{self.license_plate} ({self.car.manuName})'
 
 
 class Owner(models.Model):
