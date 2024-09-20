@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Fleet Manager Home</h1>
+  <p>
+    Welcome to Fleet Manager, a website developed to help you manage your fleet
+  </p>
+  <p>The manager has the following record counts:</p>
+  <ul>
+    <li><strong>Cars:</strong> {{ num_cars }}</li>
+    <li><strong>Copies:</strong> {{ num_instances }}</li>
+    <li><strong>Owners:</strong> {{ num_owners }}</li>
+  </ul>
+{% endblock %}
