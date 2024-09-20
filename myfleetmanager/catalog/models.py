@@ -39,7 +39,7 @@ class CarMake(models.Model):
     
     # ForeignKey used because type can contain many cars. Cars can't cover many types.
     # VehicleType class has already been defined so we can specify the object above.
-    vehicletype = models.ForeignKey(VehicleType, help_text="Select a vehicle type for this car", on_delete=models.RESTRICT, null=True)
+    vehicleType = models.ForeignKey(VehicleType, help_text="Select a vehicle type for this car", on_delete=models.RESTRICT, null=True)
 
     def __str__(self):
         """String for representing the Model object."""
@@ -52,12 +52,13 @@ class CarMake(models.Model):
 
 class CarInstance(models.Model):
     """Model representing a specific car in the shop"""
-    vinNum = models.CharField(max_length=17, help_text="Unique VIN for this particular vehicle in the garage")
     car = models.ForeignKey('CarMake', on_delete=models.RESTRICT, null=True)
+    vinNum = models.CharField(max_length=17, help_text="Unique VIN for this particular vehicle in the garage")
+    
     modelYear = models.CharField(max_length=4, help_text="What year is this model?")
     color = models.CharField(max_length=50, help_text="What is the common name of the vehicle's color and also its paint code.")
     license_plate = models.CharField(max_length=12, help_text="What is the plate for this vehicle")
-    
+    due_back = models.DateField(null=True, blank=True)
     
     CAR_STATUS = (
         ('M', 'Maintenance'),
@@ -74,6 +75,8 @@ class CarInstance(models.Model):
         default='A',
         help_text='Car Status',
     )
+    class Meta:
+        ordering = ['due_back']
 
     def __str__(self):
         """String for representing the Model object."""
