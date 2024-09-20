@@ -26,7 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include('catalog.urls')), # Added to catch catalog app
     path('', RedirectView.as_view(url='catalog/', permanent=True)), # redirect url
-    
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 # Use static() to add url mapping to serve static files during development (only)

@@ -19,12 +19,12 @@ class CarMakeAdmin(admin.ModelAdmin):
     list_display = ("manuName", "carModel", "vehicleType")
 
 class CarInstanceAdmin(admin.ModelAdmin):
-    list_display = ("car", "license_plate", "color", "modelYear")
+    list_display = ("car", "license_plate", "color", "modelYear", "owner")
     list_filter = ("modelYear", "status")
 
     fieldsets = (
         (None, {
-            'fields': ("car", "license_plate", "color", "modelYear")
+            'fields': ("car", "license_plate", "color", "modelYear", "owner")
         }),
         ("Availability",{
             "fields":("status", "due_back")
