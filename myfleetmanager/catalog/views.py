@@ -1,9 +1,13 @@
+""" Declares all of the views the pages will reach for"""
+
 from django.shortcuts import render
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
 from django.views import generic
 from django.views.generic import ListView,DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
 # Create your views here.
 
 def index(request):

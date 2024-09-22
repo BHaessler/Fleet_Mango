@@ -1,8 +1,8 @@
+"""Models for the catalog application."""
+
 from django.db import models
 # Everything below here I have added
 from django.urls import reverse # Used in get_absolute_url() to get URL for specified ID
-
-from django.db.models import UniqueConstraint # Constrains fields to unique values
 from django.db.models.functions import Lower # Returns lower cased value of field
 from django.conf import settings
 
@@ -79,6 +79,7 @@ class CarInstance(models.Model):
         help_text='Car Status',
     )
     class Meta:
+        """Model representing a ordering method"""
         ordering = ['due_back']
 
     def __str__(self):

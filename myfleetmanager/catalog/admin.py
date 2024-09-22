@@ -1,12 +1,15 @@
+"""Admin configuration for the catalog app."""
+
+
 from django.contrib import admin
 #Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
 
 # Register your models here.
-#admin.site.register(CarMake)
-#admin.site.register(Owner)
-#admin.site.register(VehicleType)
-#admin.site.register(CarInstance)
+# admin.site.register(CarMake)
+# admin.site.register(Owner)
+# admin.site.register(VehicleType)
+# admin.site.register(CarInstance)
 
 # Define the admin class
 class OwnerAdmin(admin.ModelAdmin):
@@ -31,9 +34,9 @@ class CarInstanceAdmin(admin.ModelAdmin):
         })
     )
 
-
 # Register the admin class with the associated model
 admin.site.register(Owner, OwnerAdmin)
 admin.site.register(VehicleType, VehicleTypeAdmin)
 admin.site.register(CarMake, CarMakeAdmin)
 admin.site.register(CarInstance, CarInstanceAdmin)
+
