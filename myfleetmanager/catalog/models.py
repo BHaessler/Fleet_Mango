@@ -4,10 +4,10 @@ from django.urls import reverse # Used in get_absolute_url() to get URL for spec
 
 from django.db.models import UniqueConstraint # Constrains fields to unique values
 from django.db.models.functions import Lower # Returns lower cased value of field
+from django.conf import settings
 
 # Direct imports are here
-import uuid # Required for unique book instances
-
+from datetime import date
 
 # Create your models below here.
 class VehicleType(models.Model):
@@ -44,7 +44,7 @@ class CarMake(models.Model):
 
     def get_absolute_url(self):
         """Returns the URL to access a detail record for this manufacturer."""
-        return reverse('make-detail', args=[str(self.id)])
+        return reverse('car-make-detail', args=[str(self.id)])
 
 
 class CarInstance(models.Model):
@@ -61,6 +61,8 @@ class CarInstance(models.Model):
     license_plate = models.CharField(max_length=12, help_text="What is the plate for this vehicle")
     due_back = models.DateField(null=True, blank=True)
     
+    mechanic_stat = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+
     CAR_STATUS = (
         ('M', 'Maintenance'),
         ('O', 'Owner has vehicle in their possession'),
@@ -82,6 +84,15 @@ class CarInstance(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f'{self.license_plate} ({self.car.manuName})'
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular car record."""
+        return reverse('car-detail', args=[str(self.id)])
+
+    @property
+    def is_overdue(self):
+        """Determines if the book is overdue based on due date and current date."""
+        return bool(self.due_back and date.today() > self.due_back)
 
 
 class Owner(models.Model):

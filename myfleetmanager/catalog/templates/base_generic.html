@@ -22,12 +22,15 @@
             <ul class="sidebar-nav">
               <li><a href="{% url 'index' %}">Home</a></li>
               <li><a href="{% url 'cars' %}">All cars</a></li>
-              <li><a href="">All owners</a></li>
+              <li><a href="{% url 'owners' %}">All owners</a></li>
             </ul>
             <ul class="sidebar-nav">
                 …
                {% if user.is_authenticated %}
                  <li>User: {{ user.get_username }}</li>
+
+                 <li><a href="{% url 'my-work' %}">My Work</a></li>
+
                  <li>
                    <form id="logout-form" method="post" action="{% url 'logout' %}">
                      {% csrf_token %}

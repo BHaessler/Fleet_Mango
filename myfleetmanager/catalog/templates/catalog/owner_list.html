@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1> List of owners</h1>
+
+  {% if owner_list %}
+    <ul>
+      {% for owner in owner_list %}
+      <li>
+        <a href="{{ ownerinstance.get_absolute_url }}">()</a>
+      </li>
+      {% endfor %}
+    </ul>
+    
+  {% else %}
+    <p>There are no owners in the system.</p>
+  {% endif %}
+{% endblock %}
