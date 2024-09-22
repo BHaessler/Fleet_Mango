@@ -7,12 +7,13 @@
     <ul>
       {% for owner in owner_list %}
       <li>
-        <a href="{{ ownerinstance.get_absolute_url }}">()</a>
+        <a href="{{ owner.get_absolute_url }}">({{owner.first_name}} {{owner.last_name}})</a>
       </li>
       {% endfor %}
     </ul>
-    
+
   {% else %}
     <p>There are no owners in the system.</p>
   {% endif %}
+
 {% endblock %}
