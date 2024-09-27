@@ -1,17 +1,36 @@
+body {
+  background-color: rgb(222, 252, 249); /* You can use any color name, HEX, RGB, or HSL */
+}
 .sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
+  height: 100%;
+  width: 200px;
+  list-style: none;
+  position: fixed;
+  background-color: #669e97;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
   }
+
+.sidebar-nav li {
+  width: 100%;
+  list-style-type: none;
+  }
+
 .sidebar_button {
-  display: inline-block;
-  padding: 5px 10px;
+  display: block;
+  width: 100%;
+  padding: 10px;
   background-color: #b3b3b3;
   color: black;
   text-decoration: none;
   border-radius: 5px;
   font-weight: bold;
-  transition: background-color 0.3s ease;}
+  transition: background-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 10px;
+  }
 
 .sidebar_button:hover {
     background-color: #353535;
