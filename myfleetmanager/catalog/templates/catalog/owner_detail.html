@@ -1,7 +1,16 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>License: hi you've reached me</h1>
+  <h1>{{ owner.first_name }} {{ owner.last_name }}</h1>
   <div style="margin-left:20px;margin-top:20px">
-    
+
+    <dl> 
+      {% for car in owner.carinstance_set.all %}
+        <dt><a href="{% url 'car-detail' car.pk %}" class="plate_button">{{ car.license_plate }}</a> 
+          ({{ car.car }}) </dt>
+        
+        {% empty %}
+        <p>This owner has no cars in the system.</p>
+      {% endfor %}
+      </dl>
 {% endblock %}
