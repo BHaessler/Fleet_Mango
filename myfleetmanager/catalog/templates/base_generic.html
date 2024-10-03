@@ -43,5 +43,31 @@
         <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
       </div>
     </div>
+
+    <!-- Footer starts here -->
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5>About Us:</h5>
+            <p>Brief description of your company or website to be added here.</p>
+          </div>
+          <div class="col-md-4">
+            <h5>Contact Us</h5>
+            <p>Email: info@example.com<br>Phone: (123)-456-7890</p>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <p>&copy; 2024 Fleet Manager. All rights reserved.</p>
+            <p>You have visited this page {{ num_visits }} time{{ num_visits|pluralize }}.</p>
+
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Footer ends here -->
+
   </body>
 </html>
