@@ -1,6 +1,7 @@
 body {
   background-color: rgb(222, 252, 249); /* You can use any color name, HEX, RGB, or HSL */
 }
+
 .sidebar-nav {
   height: 100%;
   width: 200px;
@@ -10,7 +11,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   }
 
 .sidebar-nav li {
