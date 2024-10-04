@@ -6,9 +6,10 @@ from .models import Owner, VehicleType, CarMake, CarInstance
 from django.views import generic
 from django.views.generic import ListView,DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView
+from .forms import OwnerForm  # the form is named owner form
 
-
-# Create your views here.
+# Views go under here
 
 def index(request):
     """View function for the homepage of the site"""
@@ -32,6 +33,12 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context=context)
 
+def owner_success_view(request):
+    return render(request, 'owner_success.html')
+
+
+# Classes go under here
+"""CAR related classes"""
 class CarListView(ListView):
     model = CarInstance
     context_object_name = 'car_list'
@@ -39,6 +46,7 @@ class CarListView(ListView):
 class CarDetailView(DetailView):
     model = CarInstance 
 
+"""OWNER related classes"""
 class OwnerListView(ListView):
     model = Owner
     context_object_name = 'owner_list'  
@@ -46,3 +54,17 @@ class OwnerListView(ListView):
 class OwnerDetailView(DetailView):
     model = Owner
 
+class OwnerCreateView(CreateView):
+    model = Owner
+    form_class = OwnerForm
+    template_name = 'Owner_details.html'
+
+    def get_success_url(self):
+        return reverse('owner-success')  # Use the name of your success URL pattern
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        # Handle invalid form submission (e.g., return to the same page with errors)
+        return super().form_invalid(form)

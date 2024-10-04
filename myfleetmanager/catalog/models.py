@@ -100,14 +100,23 @@ class Owner(models.Model):
     """Model representing an owner."""
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    phone_num = models.CharField(max_length=11, help_text="What is the customer's phone number", default='Unknown')
+    address = models.TextField(max_length=300, help_text="What is the customer's address?", default='Unknown')
+    has_insurance = models.BooleanField(default=False)
+    insurance_provider = models.CharField(max_length=100, blank=True, default='Unknown')
+    insurance_policy_number = models.CharField(max_length=50, blank=True, default='Unknown')
 
-    class Meta:
+    class Meta: #orders the owners in the system as well as prevents duplicates 
         ordering = ['last_name', 'first_name']
+        unique_together = ['first_name', 'last_name', 'phone_num']
 
     def get_absolute_url(self):
         """Returns the URL to access a particular author instance."""
         return reverse('owner-detail', args=[str(self.id)])
 
-    def __str__(self):
+    def full_name(self): #provides a pretty print of the owners Name
+        return f"{self.first_name} {self.last_name}"
+
+    def __str__(self): # provides a last name first of the owners Name
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
