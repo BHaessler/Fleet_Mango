@@ -120,3 +120,6 @@ class Owner(models.Model):
     def __str__(self): # provides a last name first of the owners Name
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
+
+
+# There should always be a trailing white space in these files 
