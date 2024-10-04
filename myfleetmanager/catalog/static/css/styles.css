@@ -1,7 +1,41 @@
+body {
+  background-color: rgb(222, 252, 249); /* You can use any color name, HEX, RGB, or HSL */
+}
+
 .sidebar-nav {
-    margin-top: 20px;
-    padding: 0;
-    list-style: none;
+  height: 100%;
+  width: 200px;
+  list-style: none;
+  position: fixed;
+  background-color: #669e97;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  }
+
+.sidebar-nav li {
+  width: 100%;
+  list-style-type: none;
+  }
+
+.sidebar_button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #b3b3b3;
+  color: black;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  text-align: center;
+  margin-bottom: 10px;
+  }
+
+.sidebar_button:hover {
+    background-color: #353535;
+    color: white;
   }
 
   #logout-form {
@@ -10,4 +44,68 @@
   #logout-form button {
     padding: 0;
     margin: 0;
+  }
+
+.plate_button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #023f77;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+.plate_button:hover {
+    background-color: #012f5a;
+    color: white;
+  }
+
+.owner_button {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #037d6a;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+.owner_button:hover {
+    background-color: #01463b;
+    color: white;
+  }
+
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 20px 0;
+  margin-top: 20px;
+  }
+  
+.footer h5 {
+  color: #333;
+  font-weight: bold;
+  }
+  
+.footer ul {
+  padding-left: 0;
+  }
+  
+.footer ul li {
+  list-style-type: none;
+  }
+  
+.footer a {
+  color: #6c757d;
+  text-decoration: none;
+  }
+  
+.footer a:hover {
+  color: #007bff;
+  text-decoration: underline;
   }

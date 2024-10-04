@@ -6,8 +6,8 @@
     <ul>
       {% for car in car_list %}
       <li>
-        Plate: <a href="{{ car.get_absolute_url }}">({{car.license_plate}})</a>
-        {{ car.car }} <a href="{{ car.owner.get_absolute_url }}">{{ car.owner }}</a>
+        Plate: <a href="{{ car.get_absolute_url }}"class="plate_button ">({{car.license_plate}}) </a>
+        {{ car.car }} <a href="{{ car.owner.get_absolute_url }}"class="owner_button">{{ car.owner }}</a>
       </li>
       {% endfor %}
     </ul>
