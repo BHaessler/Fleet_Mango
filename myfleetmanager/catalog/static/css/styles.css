@@ -1,18 +1,35 @@
 body {
   background-color: rgb(222, 252, 249); /* You can use any color name, HEX, RGB, or HSL */
+  padding-top: 15px; /* Adjust this value based on your navbar height */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  display: flex;
+  flex: 1;
+}
+
+.main-content{
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #669e97;
+  padding: 20px 10px;
 }
 
 .sidebar-nav {
-  height: 100%;
-  width: 200px;
-  list-style: none;
-  position: fixed;
-  background-color: #669e97;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  }
+  gap: 10px;  
+}
 
 .sidebar-nav li {
   width: 100%;
@@ -21,21 +38,27 @@ body {
 
 .sidebar_button {
   display: block;
-  width: 100%;
   padding: 10px;
   background-color: #b3b3b3;
   color: black;
   text-decoration: none;
   border-radius: 5px;
   font-weight: bold;
-  transition: background-color 0.3s ease;
   text-align: center;
+  transition: background-color 0.3s ease;
   margin-bottom: 10px;
   }
 
 .sidebar_button:hover {
-    background-color: #353535;
-    color: white;
+  background-color: #353535;
+  color: white;
+  }
+
+.navbar { /*top navigational bar with button for login and logout*/
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  height: 30px;
   }
 
   #logout-form {
@@ -47,35 +70,35 @@ body {
   }
 
 .plate_button {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: #023f77;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #023f77;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
   }
   
 .plate_button:hover {
-    background-color: #012f5a;
-    color: white;
+  background-color: #012f5a;
+  color: white;
   }
 
 .owner_button {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: #037d6a;
-    color: black;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #037d6a;
+  color: black;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
   }
   
 .owner_button:hover {
-    background-color: #01463b;
-    color: white;
+  background-color: #01463b;
+  color: white;
   }
 
 .footer {
