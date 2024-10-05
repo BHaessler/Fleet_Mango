@@ -7,7 +7,7 @@ from .views import OwnerCreateView, owner_success_view
 
 # URL Patterns fall under here
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.home_page, name='index'),
     path('cars/', views.CarListView.as_view(), name='cars'),
     path('car/<int:pk>/', views.CarDetailView.as_view(), name='car-detail'),
 

@@ -1,6 +1,6 @@
 """ Declares all of the views the pages will reach for"""
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
 from django.views import generic
@@ -10,6 +10,14 @@ from django.views.generic.edit import CreateView
 from .forms import OwnerForm  # the form is named owner form
 
 # Views go under here
+
+def home_page(request):
+    if request.user.is_authenticated:
+        # Render the authenticated user's home page
+        return render(request, 'index.html')
+    else:
+        # Render the non-authenticated user's home page
+        return render(request, 'no_auth_home.html')
 
 def index(request):
     """View function for the homepage of the site"""
