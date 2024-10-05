@@ -26,7 +26,7 @@ def home_page(request):
         num_visits = increment_page_visits(request, 'no_auth_home')
         return render(request, 'no_auth_home.html', {'num_visits': num_visits})
 
-
+        
 def owner_success_view(request):
     num_visits = increment_page_visits(request, 'owner_success')
     return render(request, 'owner_success.html', {'num_visits': num_visits})
@@ -86,7 +86,7 @@ class OwnerCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['num_visits'] = increment_page_visits(self.request, 'owner_create')
         return context
-        
+
     def get_success_url(self):
         return reverse('owner-success')  # Use the name of your success URL pattern
     
