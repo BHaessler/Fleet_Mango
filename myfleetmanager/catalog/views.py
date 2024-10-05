@@ -10,36 +10,31 @@ from django.views.generic.edit import CreateView
 from .forms import OwnerForm  # the form is named owner form
 
 # Views go under here
-
 def home_page(request):
-    if request.user.is_authenticated:
-        # Render the authenticated user's home page
-        return render(request, 'index.html')
-    else:
-        # Render the non-authenticated user's home page
-        return render(request, 'no_auth_home.html')
-
-def index(request):
-    """View function for the homepage of the site"""
-
-    # Generate counts of some of the main objects
-    num_instances = CarInstance.objects.all().count()
-    num_owners = Owner.objects.all().count()
-
-    # Number of visits to this view, as counted in the session variable.
+    # Get the current visit count from the session, or 0 if it doesn't exist
     num_visits = request.session.get('num_visits', 0)
+    
+    # Increment the visit count
     num_visits += 1
+    
+    # Save the new visit count to the session
     request.session['num_visits'] = num_visits
 
+    if request.user.is_authenticated:
+        # Render the authenticated user's home page
+        # Generate counts of some of the main objects
+        num_instances = CarInstance.objects.all().count()
+        num_owners = Owner.objects.all().count()
 
-    context = {
+        context = {
         'num_instances': num_instances,
         'num_owners': num_owners,
         'num_visits': num_visits,
     }
-
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'index.html', context=context)
+        return render(request, 'index.html', context=context)
+    else:
+        # Render the non-authenticated user's home page
+        return render(request, 'no_auth_home.html', {'num_visits': num_visits})
 
 def owner_success_view(request):
     return render(request, 'owner_success.html')

@@ -21,6 +21,10 @@ body {
   overflow-y: auto;
 }
 
+.main-content.full-width {
+  width: 100%;
+  margin-left: 0;
+}
 
 /* Navigation */
 .navbar {

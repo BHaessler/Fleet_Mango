@@ -32,10 +32,11 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls), #adds the admin site
     path('catalog/', include('catalog.urls')), # Added to catch catalog app
     path('', RedirectView.as_view(url='catalog/', permanent=True)), # redirect url
     path('accounts/', include('django.contrib.auth.urls')),
+
     #path to redirect users when they logout so they dont go back to the admin login 
     path('logout/', LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
 ]
