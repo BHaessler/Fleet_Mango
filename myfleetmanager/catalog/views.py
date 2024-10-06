@@ -86,7 +86,7 @@ def customer_dashboard(request):
         'user': request.user,
         # Add other relevant data for customers
     }
-    return render(request, 'customer_dashboard.html', context)
+    return render(request, 'catalog/customer_dashboard.html')  # Ensure this matches your template path
 
 
 # Classes go under here

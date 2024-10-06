@@ -24,6 +24,7 @@
           {% if user.is_authenticated %}
             {% if user.groups.all.0.name == 'Customer' %}
               <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+              <a href="{% url 'index' %}" class="btn btn-outline-secondary-sm">Return to Home</a>
             {% endif %}
           <span class="navbar-text me-3">User: {{ user.get_username }}</span>
             <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
@@ -38,16 +39,16 @@
     </header>
 
     <div class="page-container">
-      {% if user.is_authenticated %}
-        <aside class="sidebar">
-          {% block sidebar %}
-            <nav class="sidebar-nav">
-              <li><a href="{% url 'index' %}" class="sidebar_button">Home</a></li>
-              <li><a href="{% url 'cars' %}" class="sidebar_button">All cars</a></li>
-              <li><a href="{% url 'owners' %}" class="sidebar_button">All owners</a></li>
-            </nav>
-          {% endblock %}
-        </aside>
+      {% if user.is_authenticated and user.groups.all.0.name != 'Customer' %}
+          <aside class="sidebar">
+              {% block sidebar %}
+                  <nav class="sidebar-nav">
+                      <li><a href="{% url 'index' %}" class="sidebar_button">Home</a></li>
+                      <li><a href="{% url 'cars' %}" class="sidebar_button">All cars</a></li>
+                      <li><a href="{% url 'owners' %}" class="sidebar_button">All owners</a></li>
+                  </nav>
+              {% endblock %}
+          </aside>
       {% endif %}
       <main class="main-content {% if not user.is_authenticated %}full-width{% endif %}">
         {% block content %}{% endblock %}
