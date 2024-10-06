@@ -2,6 +2,7 @@
 
 
 from django.contrib import admin
+from django.contrib.auth.models import Group  # Import Group model
 #Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
 
@@ -39,4 +40,3 @@ admin.site.register(Owner, OwnerAdmin)
 admin.site.register(VehicleType, VehicleTypeAdmin)
 admin.site.register(CarMake, CarMakeAdmin)
 admin.site.register(CarInstance, CarInstanceAdmin)
-

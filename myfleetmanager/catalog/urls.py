@@ -20,6 +20,10 @@ urlpatterns = [
     path('owners/', views.OwnerListView.as_view(), name='owners'),
     
     #Separational View paths go here
+    #Customer paths
     path('customer/', views.customer_dashboard, name='customer_dashboard'),
     path('customer/cars/', views.CustomerCarListView.as_view(), name='customer_cars'),
+
+    # Admin paths
+    path('admin/dashboard/', views.AdminDashboardView.as_view(), name='admin_dashboard'),
     ]

@@ -1,7 +1,7 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
-<h1>Welcome, {{ user.username }}</h1>
-<p>This is your customer dashboard.</p>
-<!-- Add customer-specific content here -->
-{% endblock %}
+<h1>Customer Dashboard</h1>
+<p>Welcome back! Here are your vehicles:</p>
+<ul>
+{% for car in customer_cars %}
+<li>{{ car }}</li>
+{% endfor %}
+</ul>
