@@ -7,7 +7,7 @@ from .models import Owner
 def create_owner(sender, instance, created, **kwargs):
     if created:
         # Create an Owner instance for the newly created User
-        Owner.objects.create(user=instance)
+        Owner.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_owner(sender, instance, **kwargs):

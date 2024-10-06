@@ -1,11 +1,18 @@
 #imports go here
 import datetime  # for checking renewal date range.
 
+from django.contrib.auth.models import User
+
 from django import forms
 from .models import Owner
 
 
 #Classes go here
+class UserRegisterForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']  # Include other fields as necessary
+
 class OwnerForm(forms.ModelForm):
     class Meta:
         model = Owner

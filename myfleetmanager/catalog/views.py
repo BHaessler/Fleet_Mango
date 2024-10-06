@@ -1,17 +1,20 @@
 """ Declares all of the views the pages will reach for"""
 
 from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance
+
 from django.views import generic
 from django.views.generic import ListView,DetailView,TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Form imports
-from .forms import OwnerForm  # the form is named owner form
+from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
 
 # Views go under here
 def home_page(request):
@@ -61,6 +64,24 @@ def login_view(request):
                 return redirect('some_other_dashboard')
     return render(request, 'login.html')
 
+def register_view(request):
+    if request.method == "POST":
+        user_form = UserRegisterForm(request.POST)
+        owner_form = OwnerForm(request.POST)
+
+        if user_form.is_valid() and owner_form.is_valid():
+            user = user_form.save()
+            owner = owner_form.save(commit=False)
+            owner.user = user  # Link the owner to the user
+            owner.save()
+            return redirect('some_success_page')
+
+    else:
+        user_form = UserRegisterForm()
+        owner_form = OwnerForm()
+
+    return render(request, 'registration/register.html', {'user_form': user_form, 'owner_form': owner_form})
+
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
@@ -108,20 +129,20 @@ class CustomerRequiredMixin(UserPassesTestMixin):
 @login_required
 @user_passes_test(is_customer)
 def customer_dashboard(request):
-     # Get or create the owner associated with the logged-in user
-    owner, created = Owner.objects.get_or_create(user=request.user)
+    # Get the owner associated with the logged-in user
+    owner = get_object_or_404(Owner, user=request.user)
 
-    # Fetch all cars that belong to this owner
+    # Fetch all cars that belong to this owner directly from the database
     customer_cars = CarInstance.objects.filter(owner=owner)
 
     # Add any customer-specific data to the context
     context = {
         'user': request.user,
-        'customer_cars': customer_cars,  # Pass the cars to the template
-        'owner': owner,  # Include owner details in context if needed
+        'customer_cars': customer_cars,
     }
-    return render(request, 'catalog/customer_dashboard.html', context)  # Ensure this matches your template path
-
+    
+    return render(request, 'catalog/customer_dashboard.html', context)
+    
 # Classes go under here
 """CAR related classes"""
 class CarListView(ListView):

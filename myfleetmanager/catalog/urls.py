@@ -3,7 +3,7 @@
 from django.urls import path
 from . import views
 
-from .views import OwnerCreateView, owner_success_view 
+from .views import OwnerCreateView, owner_success_view, register_view 
 
 # URL Patterns fall under here
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     path('owners/', views.OwnerListView.as_view(), name='owners'),
     
     #Separational View paths go here
+    path('register/', register_view, name='register'),
     #Customer paths
     path('customer/', views.customer_dashboard, name='customer_dashboard'),
     path('customer/cars/', views.CustomerCarListView.as_view(), name='customer_cars'),
