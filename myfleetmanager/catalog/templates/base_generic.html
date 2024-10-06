@@ -19,22 +19,21 @@
   <body>
     <header class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'index' %}">Fleet Manager</a>
-        <div class="ms-auto">
-          {% if user.is_authenticated %}
-            {% if user.groups.all.0.name == 'Customer' %}
-              <a href="{% url 'customer_dashboard' %}">Dashboard</a>
-              <a href="{% url 'index' %}" class="btn btn-outline-secondary-sm">Return to Home</a>
-            {% endif %}
-          <span class="navbar-text me-3">User: {{ user.get_username }}</span>
-            <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-outline-primary">Logout</button>
-            </form>
-          {% else %}
-            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-primary-sm">Login</a>
-          {% endif %}
-        </div>
+          <a class="navbar-brand" href="{% url 'index' %}">Fleet Manager</a>
+          <div class="ms-auto d-flex"> <!-- Add d-flex here -->
+              {% if user.is_authenticated %}
+                  {% if user.groups.all.0.name == 'Customer' %}
+                      <a href="{% url 'customer_dashboard' %}" class="navbar-button">Dashboard</a>
+                  {% endif %}
+                  <span class="navbar-text me-3">User: {{ user.get_username }}</span>
+                  <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-primary">Logout</button>
+                  </form>
+              {% else %}
+                  <a href="{% url 'login' %}?next={{ request.path }}" class="navbar-button">Login</a>
+              {% endif %}
+          </div>
       </div>
     </header>
 
