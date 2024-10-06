@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse # Used in get_absolute_url() to get URL for specified ID
 from django.db.models.functions import Lower # Returns lower cased value of field
 from django.conf import settings
+from django.contrib.auth.models import User  # Add this line to import User
 
 # Direct imports are here
 from datetime import date
@@ -98,6 +99,8 @@ class CarInstance(models.Model):
 
 class Owner(models.Model):
     """Model representing an owner."""
+    #The line below allows the owners to login and see their version of the site
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_num = models.CharField(max_length=11, help_text="What is the customer's phone number", default='Unknown')
@@ -120,6 +123,8 @@ class Owner(models.Model):
     def __str__(self): # provides a last name first of the owners Name
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
+
+
 
 
 # There should always be a trailing white space in these files 

@@ -22,7 +22,10 @@
         <a class="navbar-brand" href="{% url 'index' %}">Fleet Manager</a>
         <div class="ms-auto">
           {% if user.is_authenticated %}
-            <span class="navbar-text me-3">User: {{ user.get_username }}</span>
+            {% if user.groups.all.0.name == 'Customer' %}
+              <a href="{% url 'customer_dashboard' %}">Dashboard</a>
+            {% endif %}
+          <span class="navbar-text me-3">User: {{ user.get_username }}</span>
             <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">
               {% csrf_token %}
               <button type="submit" class="btn btn-outline-primary">Logout</button>
