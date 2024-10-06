@@ -59,15 +59,39 @@ def login_view(request):
 
 """Admin Separation"""
 def is_admin(user):
-    return user.is_superuser  # Or check for a specific group
+    return user.groups.filter(name='Admin').exists() # Or check for a specific group
 
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
+        
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    # Add any customer-specific data to the context
+    context = {
+        'user': request.user,
+        # Add other relevant data for customers
+    }
+    return render(request, 'catalog/admin_dashboard.html')  # Ensure this matches your template path
 
-# Example of an admin-only view
-class AdminDashboardView(LoginRequiredMixin, AdminRequiredMixin, TemplateView):
-    template_name = 'admin_dashboard.html'
+"""Mechanics Separation"""
+def is_mechanic(user):
+    return user.groups.filter(name='Mechanics').exists() # Or check for a specific group
+
+class MechanicsRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_mechanic(self.request.user)
+
+@login_required
+@user_passes_test(is_mechanic)
+def mechanic_dashboard(request):
+    # Add any customer-specific data to the context
+    context = {
+        'user': request.user,
+        # Add other relevant data for customers
+    }
+    return render(request, 'catalog/mechanic_dashboard.html')  # Ensure this matches your template path
 
 """Customer separation"""
 def is_customer(user):

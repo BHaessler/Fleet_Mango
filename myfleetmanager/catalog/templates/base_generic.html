@@ -23,7 +23,11 @@
           <div class="ms-auto d-flex"> <!-- Add d-flex here -->
               {% if user.is_authenticated %}
                   {% if user.groups.all.0.name == 'Customer' %}
-                      <a href="{% url 'customer_dashboard' %}" class="navbar-button">Dashboard</a>
+                    <a href="{% url 'customer_dashboard' %}" class="navbar-button">Dashboard</a>
+                  {% elif user.groups.all.0.name == 'Mechanics' %}
+                    <a href="{% url 'mechanics_dashboard' %}" class="navbar-button">Dashboard</a>
+                  {% elif user.groups.all.0.name == 'Admin' %}
+                    <a href="{% url 'admin_dashboard' %}" class="navbar-button">Dashboard</a>
                   {% endif %}
                   <span class="navbar-text me-3">User: {{ user.get_username }}</span>
                   <form id="logout-form" method="post" action="{% url 'logout' %}" class="d-inline">

@@ -25,5 +25,8 @@ urlpatterns = [
     path('customer/cars/', views.CustomerCarListView.as_view(), name='customer_cars'),
 
     # Admin paths
-    path('admin/dashboard/', views.AdminDashboardView.as_view(), name='admin_dashboard'),
+    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+
+    # Mechanics paths
+    path('mechanics/dashboard/', views.mechanic_dashboard, name='mechanics_dashboard'),
     ]
