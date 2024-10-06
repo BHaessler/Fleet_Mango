@@ -1,14 +1,13 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-
 <h1>Customer Dashboard</h1>
 <p>Welcome back! Here are your vehicles:</p>
 <ul>
-{% for car in customer_cars %}
-<li>{{ car }}</li>
-{% endfor %}
+    {% for car in customer_cars %}
+        <li>{{ car }} - {{ car.license_plate }} ({{ car.modelYear }})</li>
+    {% empty %}
+        <li>No vehicles found.</li>
+    {% endfor %}
 </ul>
-
-
 {% endblock %}

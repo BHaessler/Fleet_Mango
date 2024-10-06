@@ -53,6 +53,10 @@ def login_view(request):
             login(request, user)
             if user.groups.filter(name='Customer').exists():
                 return redirect('customer_dashboard')
+            elif user.groups.filter(name='Admin').exists():
+                return redirect('admin_dashboard')
+            elif user.groups.filter(name='Mechanics').exists():
+                return redirect('mechanic_dashboard')
             else:
                 return redirect('some_other_dashboard')
     return render(request, 'login.html')
@@ -64,7 +68,7 @@ def is_admin(user):
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
-        
+
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -101,17 +105,22 @@ class CustomerRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_customer(self.request.user)
 
-
 @login_required
 @user_passes_test(is_customer)
 def customer_dashboard(request):
+     # Get or create the owner associated with the logged-in user
+    owner, created = Owner.objects.get_or_create(user=request.user)
+
+    # Fetch all cars that belong to this owner
+    customer_cars = CarInstance.objects.filter(owner=owner)
+
     # Add any customer-specific data to the context
     context = {
         'user': request.user,
-        # Add other relevant data for customers
+        'customer_cars': customer_cars,  # Pass the cars to the template
+        'owner': owner,  # Include owner details in context if needed
     }
-    return render(request, 'catalog/customer_dashboard.html')  # Ensure this matches your template path
-
+    return render(request, 'catalog/customer_dashboard.html', context)  # Ensure this matches your template path
 
 # Classes go under here
 """CAR related classes"""
