@@ -5,7 +5,7 @@
 <p>Welcome back! Here are your vehicles:</p>
 <ul>
     {% for car in customer_cars %}
-        <li>{{ car }} - {{ car.license_plate }} ({{ car.modelYear }})</li>
+        <li>{{ car }} - ({{ car.modelYear }})</li>
     {% empty %}
         <li>No vehicles found.</li>
     {% endfor %}
