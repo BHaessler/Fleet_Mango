@@ -71,17 +71,32 @@ def register_view(request):
 
         if user_form.is_valid() and owner_form.is_valid():
             user = user_form.save()
-            owner = owner_form.save(commit=False)
-            owner.user = user  # Link the owner to the user
-            owner.save()
-            return redirect('some_success_page')
+
+            # Check if the owner already exists for this user
+            owner, created = Owner.objects.get_or_create(user=user)  # This will not create a new owner if one exists
+            
+            # Update the owner fields if they already exist
+            if not created:
+                # Optionally update existing fields if needed
+                owner.first_name = owner_form.cleaned_data['first_name']
+                owner.last_name = owner_form.cleaned_data['last_name']
+                owner.phone_num = owner_form.cleaned_data['phone_num']
+                owner.save()  # Save updates
+
+            else:
+                # If created, assign the fields from the form
+                owner.first_name = owner_form.cleaned_data['first_name']
+                owner.last_name = owner_form.cleaned_data['last_name']
+                owner.phone_num = owner_form.cleaned_data['phone_num']
+                owner.save()  # Save new owner
+
+            return redirect('some_success_page')  # Redirect after successful registration
 
     else:
         user_form = UserRegisterForm()
         owner_form = OwnerForm()
 
     return render(request, 'registration/register.html', {'user_form': user_form, 'owner_form': owner_form})
-
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group

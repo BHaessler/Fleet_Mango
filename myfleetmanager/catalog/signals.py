@@ -4,13 +4,11 @@ from django.contrib.auth.models import User
 from .models import Owner
 
 @receiver(post_save, sender=User)
-def create_owner(sender, instance, created, **kwargs):
+def create_or_update_owner(sender, instance, created, **kwargs):
     if created:
-        # Create an Owner instance for the newly created User
-        Owner.objects.get_or_create(user=instance)
-
-@receiver(post_save, sender=User)
-def save_owner(sender, instance, **kwargs):
-    # Save the associated Owner instance when the User is saved
-    if hasattr(instance, 'owner'):
-        instance.owner.save()
+        Owner.objects.create(user=instance, first_name=instance.first_name, last_name=instance.last_name)
+    else:
+        if hasattr(instance, 'owner'):
+            instance.owner.first_name = instance.first_name
+            instance.owner.last_name = instance.last_name
+            instance.owner.save()
