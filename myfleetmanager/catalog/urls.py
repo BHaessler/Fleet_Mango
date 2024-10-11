@@ -3,11 +3,12 @@
 from django.urls import path
 from . import views
 
-from .views import OwnerCreateView, owner_success_view, register_view 
+from .views import OwnerCreateView, owner_success_view, register_view, edit_footer_content 
 
 # URL Patterns fall under here
 urlpatterns = [
     path('', views.home_page, name='index'), #homepage path
+    path('edit-footer/', edit_footer_content, name='edit_footer_content'), #edit footer content
 
     #CAR oriented paths go here
     path('cars/', views.CarListView.as_view(), name='cars'),
@@ -21,6 +22,7 @@ urlpatterns = [
     
     #Separational View paths go here
     path('register/', register_view, name='register'),
+
     #Customer paths
     path('customer/', views.customer_dashboard, name='customer_dashboard'),
     path('customer/cars/', views.CustomerCarListView.as_view(), name='customer_cars'),

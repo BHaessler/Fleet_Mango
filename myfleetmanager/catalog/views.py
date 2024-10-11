@@ -3,7 +3,8 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
-from .models import Owner, VehicleType, CarMake, CarInstance
+from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
+from .forms import FooterContentForm
 
 from django.views import generic
 from django.views.generic import ListView,DetailView,TemplateView
@@ -17,6 +18,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
 
 # Views go under here
+# function based views go here
 def home_page(request):
     if request.user.is_authenticated:
         num_visits = increment_page_visits(request, 'home')
@@ -45,9 +47,9 @@ def increment_page_visits(request, page_name):
     request.session[session_key] = num_visits
     return num_visits
 
-
 # Defining separation of users here
 def login_view(request):
+    num_visits = increment_page_visits(request, 'login')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -62,9 +64,11 @@ def login_view(request):
                 return redirect('mechanic_dashboard')
             else:
                 return redirect('some_other_dashboard')
-    return render(request, 'login.html')
+    return render(request, 'login.html', {'num_visits': num_visits})
+
 
 def register_view(request):
+    num_visits = increment_page_visits(request, 'register')
     if request.method == "POST":
         user_form = UserRegisterForm(request.POST)
         owner_form = OwnerForm(request.POST)
@@ -90,13 +94,18 @@ def register_view(request):
                 owner.phone_num = owner_form.cleaned_data['phone_num']
                 owner.save()  # Save new owner
 
-            return redirect('some_success_page')  # Redirect after successful registration
+            return redirect('owner_success.html')  # Redirect after successful registration
 
     else:
         user_form = UserRegisterForm()
         owner_form = OwnerForm()
+    context = {
+        'user_form': user_form, 
+        'owner_form': owner_form,
+        'num_visits': num_visits,
+    }
+    return render(request, 'registration/register.html', context)
 
-    return render(request, 'registration/register.html', {'user_form': user_form, 'owner_form': owner_form})
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
@@ -108,12 +117,17 @@ class AdminRequiredMixin(UserPassesTestMixin):
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    # Add any customer-specific data to the context
+    # Add any admin-specific data to the context
+    num_visits = increment_page_visits(request, 'admin_dashboard')
+    footer_content = FooterContent.objects.first()  # Get the first (and only) footer content
     context = {
         'user': request.user,
-        # Add other relevant data for customers
+        'num_visits': num_visits,
+        'footer_content': footer_content,
+        # Add other relevant data for admins
     }
-    return render(request, 'catalog/admin_dashboard.html')  # Ensure this matches your template path
+    return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
+
 
 """Mechanics Separation"""
 def is_mechanic(user):
@@ -127,8 +141,10 @@ class MechanicsRequiredMixin(UserPassesTestMixin):
 @user_passes_test(is_mechanic)
 def mechanic_dashboard(request):
     # Add any customer-specific data to the context
+    num_visits = increment_page_visits(request, 'mechanic_dashboard')
     context = {
         'user': request.user,
+        'num_visits':num_visits
         # Add other relevant data for customers
     }
     return render(request, 'catalog/mechanic_dashboard.html')  # Ensure this matches your template path
@@ -146,7 +162,7 @@ class CustomerRequiredMixin(UserPassesTestMixin):
 def customer_dashboard(request):
     # Get the owner associated with the logged-in user
     owner = get_object_or_404(Owner, user=request.user)
-
+    num_visits = increment_page_visits(request, 'customer_dashboard')
     # Fetch all cars that belong to this owner directly from the database
     customer_cars = CarInstance.objects.filter(owner=owner)
 
@@ -155,11 +171,27 @@ def customer_dashboard(request):
         'user': request.user,
         'owner': owner,
         'customer_cars': customer_cars,
+        'num_visits':num_visits
     }
     
     return render(request, 'catalog/customer_dashboard.html', context)
-    
-# Classes go under here
+
+@login_required
+@user_passes_test(is_admin)  # Ensure only admins can access this view
+def edit_footer_content(request):
+    footer_content = get_object_or_404(FooterContent)
+
+    if request.method == "POST":
+        form = FooterContentForm(request.POST, instance=footer_content)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')  # Redirect after saving
+    else:
+        form = FooterContentForm(instance=footer_content)
+
+    return render(request, 'catalog/edit_footer_content.html', {'form': form})
+
+# Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):
     model = CarInstance
@@ -225,3 +257,8 @@ class CustomerCarListView(LoginRequiredMixin, CustomerRequiredMixin, ListView):
 
     def get_queryset(self):
         return CarInstance.objects.filter(owner__user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['num_visits'] = increment_page_visits(self.request, 'customer_car_list')
+        return context

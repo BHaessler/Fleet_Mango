@@ -125,6 +125,12 @@ class Owner(models.Model):
         return f'{self.last_name}, {self.first_name}'
 
 
-
-
+class FooterContent(models.Model):
+    about_us = models.TextField(help_text="Brief description of your company or website.")
+    contact_email = models.EmailField(help_text="Contact email address.")
+    contact_phone = models.CharField(max_length=15, help_text="Contact phone number.")
+    
+    def __str__(self):
+        return "Footer Content"
+        
 # There should always be a trailing white space in these files 

@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 #Everything under here I added
 from django import forms
-from .models import Owner, VehicleType, CarMake, CarInstance
+from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
 
 # Register your models here.
 # admin.site.register(CarMake)
@@ -95,6 +95,23 @@ class CustomUserAdmin(UserAdmin):
                 form.base_fields['last_name'].initial = 'User'
         
         return form
+
+@admin.register(FooterContent)
+class FooterContentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'about_us', 'contact_email', 'contact_phone')
+    # Optionally, you can customize other settings like search_fields or list_filter
+
+    def has_add_permission(self, request):
+        # Allow only one FooterContent entry
+        return not FooterContent.objects.exists()
+
+    def has_change_permission(self, request, obj=None):
+        # Allow changes to the existing FooterContent
+        return True
+
+    def has_delete_permission(self, request, obj=None):
+        # Prevent deletion of the FooterContent
+        return False
 
 # Register the admin class with the associated model
 admin.site.register(Owner, OwnerAdmin)
