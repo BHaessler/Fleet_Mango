@@ -17,19 +17,48 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 40px;
   overflow-y: auto;
 }
 
+.main-content.full-width {
+  width: 100%;
+  margin-left: 0;
+}
 
 /* Navigation */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1030;
-  height: 30px;
+  height: 50px;
 }
 
+.navbar-button {
+  border-color: #04003a; /* Change this to your desired border color */
+  color: #fff; /* Text color */
+  background-color: #0b00a8; /* Background color */
+  margin-right: 10px; /* Space between buttons */
+  display: block;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-button:hover {
+  background-color: #02001a; /* Darker shade on hover */
+  border-color: #ffffff; /* Match border color on hover */
+}
+
+/* Ensure buttons are inline */
+.ms-auto {
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Align items vertically centered */
+}
 
 /* Sidebar */
 .sidebar {

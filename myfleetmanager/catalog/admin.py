@@ -2,7 +2,12 @@
 
 
 from django.contrib import admin
+from django.contrib.auth.models import Group  # Import Group model
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+
 #Everything under here I added
+from django import forms
 from .models import Owner, VehicleType, CarMake, CarInstance
 
 # Register your models here.
@@ -34,9 +39,68 @@ class CarInstanceAdmin(admin.ModelAdmin):
         })
     )
 
+class UserOwnerForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            Owner.objects.update_or_create(
+                user=user,
+                defaults={'first_name': user.first_name, 'last_name': user.last_name}
+            )
+        return user
+
+def sync_with_owner(modeladmin, request, queryset):
+    for user in queryset:
+        Owner.objects.update_or_create(
+            user=user,
+            defaults={'first_name': user.first_name, 'last_name': user.last_name}
+        )
+sync_with_owner.short_description = "Sync selected users with owner model"
+
+class CustomUserAdmin(UserAdmin):
+    form = UserOwnerForm
+    actions = [sync_with_owner]
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'first_name', 'last_name', 'is_staff'),
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        if not change:  # Only for new users
+            obj.is_staff = True
+        super().save_model(request, obj, form, change)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        is_superuser = request.user.is_superuser
+        
+        if not is_superuser:
+            if 'username' in form.base_fields:
+                form.base_fields['username'].initial = 'default_username'
+            if 'email' in form.base_fields:
+                form.base_fields['email'].initial = 'default@example.com'
+            if 'is_staff' in form.base_fields:
+                form.base_fields['is_staff'].initial = True
+            if 'first_name' in form.base_fields:
+                form.base_fields['first_name'].initial = 'Default'
+            if 'last_name' in form.base_fields:
+                form.base_fields['last_name'].initial = 'User'
+        
+        return form
+
 # Register the admin class with the associated model
 admin.site.register(Owner, OwnerAdmin)
 admin.site.register(VehicleType, VehicleTypeAdmin)
 admin.site.register(CarMake, CarMakeAdmin)
 admin.site.register(CarInstance, CarInstanceAdmin)
 
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)

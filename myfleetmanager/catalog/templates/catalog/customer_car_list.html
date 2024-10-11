@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>My Cars</h1>
+  {% if customer_cars %}
+    <ul>
+    {% for car in customer_cars %}
+      <li>
+        {{ car.car.manuName }} - {{ car.license_plate }}
+        {% if car.status == 'M' %}
+          (In Maintenance)
+        {% elif car.status == 'R' %}
+          (Ready for pickup)
+        {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p>You don't have any cars registered.</p>
+  {% endif %}
+{% endblock %}
