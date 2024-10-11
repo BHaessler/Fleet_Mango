@@ -8,6 +8,28 @@ body {
   flex-direction: column;
 }
 
+.dashboard_button {
+  background-color: #455f7e; /* Button color */
+  color: white;              /* Text color */
+  text-decoration: none;      /* Remove underline */
+  border: none;               /* Remove default border */
+  border-radius: 5px;        /* Rounded corners */
+  padding: 10px 20px;        /* Padding */
+  font-size: 16px;           /* Font size */
+  cursor: pointer;            /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect */
+.dashboard_button:hover {
+  background-color: #1e2731; /* Darker shade on hover */
+}
+
+/* Focus effect */
+.dashboard_button:focus {
+  outline: none;             /* Remove outline */
+  box-shadow: 0 0 5px #1e2731; /* Add shadow for focus effect */
+}
 
 /* Layout */
 .page-container {

@@ -4,7 +4,7 @@ import datetime  # for checking renewal date range.
 from django.contrib.auth.models import User
 
 from django import forms
-from .models import Owner
+from .models import Owner, FooterContent
 
 
 #Classes go here
@@ -31,3 +31,8 @@ class OwnerForm(forms.ModelForm):
                 raise forms.ValidationError("Insurance provider and policy number are required when insurance is selected.")
 
         return cleaned_data
+
+class FooterContentForm(forms.ModelForm):
+    class Meta:
+        model = FooterContent
+        fields = ['about_us', 'contact_email', 'contact_phone']
