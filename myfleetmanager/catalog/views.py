@@ -153,6 +153,7 @@ def customer_dashboard(request):
     # Add any customer-specific data to the context
     context = {
         'user': request.user,
+        'owner': owner,
         'customer_cars': customer_cars,
     }
     
