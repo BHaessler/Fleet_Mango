@@ -2,7 +2,6 @@
 
 from django.apps import AppConfig
 
-
 class CatalogConfig(AppConfig):
     """Configuration class for the catalog application."""
 

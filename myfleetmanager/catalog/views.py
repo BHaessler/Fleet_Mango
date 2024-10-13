@@ -106,6 +106,8 @@ def register_view(request):
     }
     return render(request, 'registration/register.html', context)
 
+
+
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
@@ -113,6 +115,7 @@ def is_admin(user):
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -128,6 +131,7 @@ def admin_dashboard(request):
     }
     return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
 
+
 @login_required
 @user_passes_test(is_admin)
 def user_list(request):
@@ -140,11 +144,60 @@ def add_user(request):
     if request.method == "POST":
         form = UserManagementForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('user_list')  # Redirect to user list after adding
+            user = form.save()  # Save the user first
+
+            # Check for existing owner
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_num = request.POST.get('phone_num')
+
+            owner, created = Owner.objects.get_or_create(
+                first_name=first_name,
+                last_name=last_name,
+                phone_num=phone_num,
+                defaults={'user': user}
+            )
+
+            if not created:
+                # If the owner already exists, you might want to update or handle it
+                # For example, you can assign the user to the existing owner
+                owner.user = user
+                owner.save()
+
+            return redirect('user_list')  # Redirect after saving
     else:
         form = UserManagementForm()
     return render(request, 'user_management/add_user.html', {'form': form})
+
+def add_user(request):
+    if request.method == "POST":
+        form = UserManagementForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Save the user first
+
+            # Check for existing owner
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_num = request.POST.get('phone_num')
+
+            owner, created = Owner.objects.get_or_create(
+                first_name=first_name,
+                last_name=last_name,
+                phone_num=phone_num,
+                defaults={'user': user}
+            )
+
+            if not created:
+                # If the owner already exists, you might want to update or handle it
+                # For example, you can assign the user to the existing owner
+                owner.user = user
+                owner.save()
+
+            return redirect('user_list')  # Redirect after saving
+    else:
+        form = UserManagementForm()
+    return render(request, 'user_management/add_user.html', {'form': form})
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -159,6 +212,7 @@ def edit_user(request, user_id):
         form = UserManagementForm(instance=user)
     return render(request, 'user_management/edit_user.html', {'form': form})
 
+
 @login_required
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
@@ -167,6 +221,7 @@ def delete_user(request, user_id):
         user.delete()
         return redirect('user_list')
     return render(request, 'user_management/delete_user.html', {'user': user})
+
 
 """Mechanics Separation"""
 def is_mechanic(user):
@@ -218,7 +273,7 @@ def customer_dashboard(request):
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
 def edit_footer_content(request):
-    footer_content = get_object_or_404(FooterContent)
+    footer_content, created = FooterContent.objects.get_or_create(pk=1)  # Assuming only one instance is needed
 
     if request.method == "POST":
         form = FooterContentForm(request.POST, instance=footer_content)
@@ -230,6 +285,7 @@ def edit_footer_content(request):
 
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
+    
 # Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):
