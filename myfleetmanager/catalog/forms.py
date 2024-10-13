@@ -13,6 +13,19 @@ class UserRegisterForm(forms.ModelForm):
         model = User
         fields = ['username', 'password']  # Include other fields as necessary
 
+class UserManagementForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password']  # Add other fields as necessary
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if self.cleaned_data['password']:
+            user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+        return user
+
 class OwnerForm(forms.ModelForm):
     class Meta:
         model = Owner

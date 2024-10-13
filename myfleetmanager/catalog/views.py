@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
-from .forms import FooterContentForm
+from .forms import FooterContentForm, UserManagementForm
 
 from django.views import generic
 from django.views.generic import ListView,DetailView,TemplateView
@@ -128,6 +128,45 @@ def admin_dashboard(request):
     }
     return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
 
+@login_required
+@user_passes_test(is_admin)
+def user_list(request):
+    users = User.objects.all()
+    return render(request, 'user_management/user_list.html', {'users': users})
+
+@login_required
+@user_passes_test(is_admin)
+def add_user(request):
+    if request.method == "POST":
+        form = UserManagementForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')  # Redirect to user list after adding
+    else:
+        form = UserManagementForm()
+    return render(request, 'user_management/add_user.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.method == "POST":
+        form = UserManagementForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')
+    else:
+        form = UserManagementForm(instance=user)
+    return render(request, 'user_management/edit_user.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def delete_user(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.method == "POST":
+        user.delete()
+        return redirect('user_list')
+    return render(request, 'user_management/delete_user.html', {'user': user})
 
 """Mechanics Separation"""
 def is_mechanic(user):
@@ -189,7 +228,7 @@ def edit_footer_content(request):
     else:
         form = FooterContentForm(instance=footer_content)
 
-    return render(request, 'catalog/edit_footer_content.html', {'form': form})
+    return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
 # Class based views go under here
 """CAR related classes"""

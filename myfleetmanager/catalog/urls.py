@@ -4,6 +4,8 @@ from django.urls import path
 from . import views
 
 from .views import OwnerCreateView, owner_success_view, register_view, edit_footer_content 
+from .views import user_list, add_user, edit_user, delete_user
+
 
 # URL Patterns fall under here
 urlpatterns = [
@@ -29,6 +31,11 @@ urlpatterns = [
 
     # Admin paths
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+
+    path('users/', user_list, name='user_list'),
+    path('users/add/', add_user, name='add_user'),
+    path('users/edit/<int:user_id>/', edit_user, name='edit_user'),
+    path('users/delete/<int:user_id>/', delete_user, name='delete_user'),
 
     # Mechanics paths
     path('mechanics/dashboard/', views.mechanic_dashboard, name='mechanics_dashboard'),
