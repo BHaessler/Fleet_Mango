@@ -1,16 +1,46 @@
-<!-- feedback_list.html -->
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>Feedback Submissions</h1>
-<ul>
-    {% for feedback in feedbacks %}
-        <li>
-            {{ feedback.created_at }}: {{ feedback.content }} 
-            {% if feedback.user %} (User: {{ feedback.user.username }}) 
-            {% endif %}
-            <a href="{% url 'delete_feedback' feedback.id %}">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+    <h1>Feedback List</h1>
+
+    <form method="GET">
+        <label for="category">Filter by Category:</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+            <option value="">All</option>
+            {% for value, label in categories %}
+                <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>
+                    {{ label|capfirst }}  <!-- Capitalize the first letter of the label -->
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Message</th>
+                <th>Category</th>
+                <th>Date Submitted</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in feedback_list %}
+                <tr>
+                    <td>{{ feedback.user.username }}</td>
+                    <td>{{ feedback.content }}</td>
+                    <td>{{ feedback.category|capfirst }}</td>
+                    <td>{{ feedback.created_at }}</td>
+                    <td>
+                        <a href="{% url 'delete_feedback' feedback.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No feedback available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

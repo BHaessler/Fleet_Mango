@@ -314,8 +314,20 @@ def delete_feedback(request, feedback_id):
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def feedback_list_view(request):
-    feedbacks = Feedback.objects.all()
-    return render(request, 'page_management/feedback_list.html', {'feedbacks': feedbacks})
+    category_filter = request.GET.get('category', None)
+    feedback_list = Feedback.objects.all()
+
+    if category_filter:
+        feedback_list = feedback_list.filter(category=category_filter)
+
+    categories = Feedback.CATEGORY_CHOICES  # Assuming CATEGORY_CHOICES is defined in your Feedback model
+
+    context = {
+        'feedback_list': feedback_list,
+        'categories': categories,
+        'selected_category': category_filter,
+    }
+    return render(request, 'page_management/feedback_list.html', context)
 
 # Class based views go under here
 """CAR related classes"""
