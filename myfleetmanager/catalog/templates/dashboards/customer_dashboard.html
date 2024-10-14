@@ -1,0 +1,26 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Welcome back, {{ owner.first_name }} {{ owner.last_name }}!</h1>
+
+<h2>Your Contact Information</h2>
+<p><strong>Phone Number:</strong> {{ owner.phone_num }}</p>
+{% if owner.has_insurance %}
+<p><strong>Insurance Provider:</strong> {{ owner.insurance_provider }}</p>
+<p><strong>Policy Number:</strong> {{ owner.insurance_policy_number }}</p>
+{% else %} 
+<p>Please contact the shop to update your insurance information if needed</p>
+{% endif %}
+
+
+<h2>Your Vehicles</h2>
+<ul>
+    {% for car in customer_cars %}
+        <li>{{ car }} - ({{ car.modelYear }})</li>
+    {% empty %}
+        <li>No vehicles found.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'feedback' %}" class="dashboard_button">Provide Feedback</a>
+
+{% endblock %}

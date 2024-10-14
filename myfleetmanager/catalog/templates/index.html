@@ -1,0 +1,20 @@
+<!-- This page will only be seen if the user is signed in-->
+
+{% extends "base_generic.html" %}
+<body>
+  <div class="main-content">
+{% block content %}
+  <h1>Welcome, {{ user.username }}!</h1>
+  <!-- Add content for authenticated users -->
+  <h1>Fleet Manager Home</h1>
+  <p>
+    Welcome to Fleet Manager, a website developed to help you manage your fleet
+  </p>
+  <p>The manager has the following record counts:</p>
+  <ul>
+    <li><strong>Individual Cars: </strong> {{ num_instances }}</li>
+    <li><strong>Owners:</strong> {{ num_owners }}</li>
+  </ul>
+{% endblock %}
+</div>
+</body>

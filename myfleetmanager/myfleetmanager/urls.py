@@ -13,25 +13,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.contrib import admin  
 
 # ANYTHING UNDER HERE I HAVE ADDED
+from django.contrib.auth.views import LogoutView
+from django.urls import path, include
+from django.conf import settings
+
 # Use include() to add paths from the catalog application
 from django.urls import include
+
 # Add URL maps to redirect the base URL to our application
 from django.views.generic import RedirectView
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('catalog/', include('catalog.urls')), # Added to catch catalog app
-    path('', RedirectView.as_view(url='catalog/', permanent=True)), # redirect url
-    
-]
 
 # Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings
 from django.conf.urls.static import static
 
+
+urlpatterns = [
+    path('admin/', admin.site.urls), #adds the admin site
+    path('catalog/', include('catalog.urls')), # Added to catch catalog app
+    path('', RedirectView.as_view(url='catalog/', permanent=True)), # redirect url
+    path('accounts/', include('django.contrib.auth.urls')),
+
+    #path to redirect users when they logout so they dont go back to the admin login 
+    path('logout/', LogoutView.as_view(next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
+]
 
 urlpatterns+= static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

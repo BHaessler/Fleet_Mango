@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>Total Car List</h1>
+  {% if car_list %}
+    <ul>
+      {% for car in car_list %}
+      <li>
+        Plate: <a href="{{ car.get_absolute_url }}"class="plate_button ">({{car.license_plate}}) </a>
+        {{ car.car }} <a href="{{ car.owner.get_absolute_url }}"class="owner_button">{{ car.owner }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>There are no cars in the system.</p>
+  {% endif %}
+{% endblock %}

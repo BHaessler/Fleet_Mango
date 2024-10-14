@@ -1,0 +1,52 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>User Management</h1>
+<a href="{% url 'add_user' %}" class="dashboard_button">Add User</a>
+<p></p>
+<hr> <!-- A line before user list -->
+
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    <a href="?user_id={{ user.id }}" class="dashboard_button">View Details</a>
+                    <a href="{% url 'edit_user' user.id %}" class="dashboard_button">Edit</a>
+                    <form action="{% url 'delete_user' user.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dashboard_button_delete">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">No users available.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if user_details %}
+<hr> <!-- A line before user details -->
+    <h2>User Details</h2>
+    <p><strong>Username:</strong> {{ user_details.username }}</p>
+    <p><strong>Email:</strong> {{ user_details.email }}</p>
+    <p><strong>First Name:</strong> {{ user_details.first_name }}</p>
+    <p><strong>Last Name:</strong> {{ user_details.last_name }}</p>
+    <p><strong>Group:</strong> 
+        {% for group in user_details.groups.all %}
+            {{ group.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+    <a href="{% url 'user_list' %}">Back to User List</a>
+{% endif %}
+
+{% endblock %}

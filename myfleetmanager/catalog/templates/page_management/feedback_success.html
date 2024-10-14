@@ -1,0 +1,7 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Success!</h1>
+    <p>Your information has been successfully submitted. Thank you for providing feedback today.</p>
+    <a href="{% url 'customer_dashboard' %}" class="dashboard_button">Return to Dashboard</a>
+{% endblock %}

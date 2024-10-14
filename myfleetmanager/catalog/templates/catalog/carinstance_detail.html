@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>License: {{ car.license_plate }}</h1>
+
+  <p><strong>Owner:</strong> <a href="{{ carinstance.owner.get_absolute_url }}">{{ carinstance.owner }}</a></p>
+
+  <p><strong>License Plate:</strong> {{ carinstance.license_plate}}</p>
+  <p><strong>VIN:</strong> {{ carinstance.vinNUM }}</p>
+  <p><strong>Color:</strong> {{ carinstance.color }}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    
+    {% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ owner.first_name }} {{ owner.last_name }}</h1>
+  <div style="margin-left:20px;margin-top:20px">
+    <hr>
+    <dl> 
+      {% for car in owner.carinstance_set.all %}
+        <dt><a href="{% url 'car-detail' car.pk %}" class="plate_button">{{ car.license_plate }}</a> 
+          ({{ car.car }}) </dt>
+        
+        {% empty %}
+        <p>This owner has no cars in the system.</p>
+      {% endfor %}
+      </dl>
+      <hr>
+    <h5>Contact Information</h5>
+      <p>Phone Number: {{ owner.phone_num }}</p>
+      <p>Address: {{ owner.address }}</p>
+    <hr>
+    <h4>Insurance Information</h4>
+      {% if owner.has_insurance %}
+        <h6>Customer has insurance. See below.</h6>
+        <p>Insurance Provider: {{ owner.insurance_provider }} <sub>(If this is unknown, please fill in ASAP)</sub></p>
+        <p>Policy Number: {{ owner.insurance_policy_number }} <sub>(If this is unknown, please fill in ASAP)</sub></p>
+      {% else %}
+        <p>This owner does not have insurance.</p>
+      {% endif %}
+{% endblock %}
+
+# There should always be a trailing white space in these files 
