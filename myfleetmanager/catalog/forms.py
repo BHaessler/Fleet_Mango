@@ -71,7 +71,10 @@ class FooterContentForm(forms.ModelForm):
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        fields = ['content']
+        fields = ['content', 'category']  # Include the new category field
+
+        # adds help texts 
         widgets = {
-            'content': forms.Textarea(attrs={'placeholder': 'Your feedback...', 'rows': 5}),
+            'content': forms.Textarea(attrs={'placeholder': 'Your feedback here...'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
         }

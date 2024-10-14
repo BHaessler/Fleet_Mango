@@ -133,11 +133,18 @@ class FooterContent(models.Model):
         return "Footer Content"
 
 class Feedback(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Link to the user if logged in
+    CATEGORY_CHOICES = [
+        ('site', 'Site Feedback'),
+        ('personnel', 'Personnel Feedback'),
+        ('shop', 'Shop Feedback'),
+        ('general', 'General Feedback'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     content = models.TextField()
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='general')  # New field for category
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'Feedback from {self.user.username if self.user else "Anonymous"}'
-
 # There should always be a trailing white space in these files 

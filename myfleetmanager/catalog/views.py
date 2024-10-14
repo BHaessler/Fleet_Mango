@@ -123,7 +123,6 @@ class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
 
-
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -136,7 +135,7 @@ def admin_dashboard(request):
         'footer_content': footer_content,
         # Add other relevant data for admins
     }
-    return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
+    return render(request, 'dashboards/admin_dashboard.html', context)  # Ensure this matches your template path
 
 @login_required
 @user_passes_test(is_admin)
@@ -244,7 +243,7 @@ def mechanic_dashboard(request):
         'num_visits':num_visits
         # Add other relevant data for customers
     }
-    return render(request, 'catalog/mechanic_dashboard.html')  # Ensure this matches your template path
+    return render(request, 'dashboards/mechanic_dashboard.html')  # Ensure this matches your template path
 
 """Customer separation"""
 def is_customer(user):
@@ -271,7 +270,7 @@ def customer_dashboard(request):
         'num_visits':num_visits
     }
     
-    return render(request, 'catalog/customer_dashboard.html', context)
+    return render(request, 'dashboards/customer_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
@@ -288,27 +287,26 @@ def edit_footer_content(request):
 
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
-
 def feedback_view(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.save(commit=False)
-            if request.user.is_authenticated:
-                feedback.user = request.user
+            feedback.user = request.user  # Set the user if logged in
             feedback.save()
-            return redirect('customer_dashboard')  # Redirect to a success page
+            return redirect('feedback_success')  # Redirect after saving
     else:
         form = FeedbackForm()
-    
     return render(request, 'page_management/feedback_form.html', {'form': form})
+
+def feedback_success_view(request):
+    return render(request, 'page_management/feedback_success.html')
 
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def feedback_list_view(request):
     feedbacks = Feedback.objects.all()
     return render(request, 'page_management/feedback_list.html', {'feedbacks': feedbacks})
-
 
 # Class based views go under here
 """CAR related classes"""

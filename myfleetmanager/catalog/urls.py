@@ -5,13 +5,14 @@ from . import views
 
 from .views import OwnerCreateView, owner_success_view, register_view, edit_footer_content 
 from .views import user_list, add_user, edit_user, delete_user
-from .views import feedback_view, feedback_list_view
+from .views import feedback_view, feedback_list_view, feedback_success_view
 
 # URL Patterns fall under here
 urlpatterns = [
     path('', views.home_page, name='index'), #homepage path
     path('edit-footer/', edit_footer_content, name='edit_footer_content'), #edit footer content
     path('feedback/', feedback_view, name='feedback'),
+    path('feedback/success/', feedback_success_view, name='feedback_success'),
     path('admin/feedback/', feedback_list_view, name='feedback_list'),
 
     #CAR oriented paths go here
