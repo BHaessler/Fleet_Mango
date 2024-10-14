@@ -1,0 +1,14 @@
+<!-- feedback_list.html -->
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Feedback Submissions</h1>
+<ul>
+    {% for feedback in feedbacks %}
+        <li>
+            {{ feedback.created_at }}: {{ feedback.content }} 
+            {% if feedback.user %} (User: {{ feedback.user.username }}) {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

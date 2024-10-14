@@ -21,8 +21,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 # Form imports
-from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
-from .forms import FooterContentForm, UserManagementForm
+from .forms import UserRegisterForm, OwnerForm, UserManagementForm
+from .forms import FooterContentForm, FeedbackForm
 
 
 # Views go under here
@@ -288,7 +288,28 @@ def edit_footer_content(request):
 
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
+
+def feedback_view(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            if request.user.is_authenticated:
+                feedback.user = request.user
+            feedback.save()
+            return redirect('feedback_success')  # Redirect to a success page
+    else:
+        form = FeedbackForm()
     
+    return render(request, 'page_management/feedback_form.html', {'form': form})
+
+@login_required
+@user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
+def feedback_list_view(request):
+    feedbacks = Feedback.objects.all()
+    return render(request, 'page_management/feedback_list.html', {'feedbacks': feedbacks})
+
+
 # Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):

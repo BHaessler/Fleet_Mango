@@ -11,6 +11,8 @@ from .views import user_list, add_user, edit_user, delete_user
 urlpatterns = [
     path('', views.home_page, name='index'), #homepage path
     path('edit-footer/', edit_footer_content, name='edit_footer_content'), #edit footer content
+    path('feedback/', feedback_view, name='feedback'),
+    path('admin/feedback/', feedback_list_view, name='feedback_list'),
 
     #CAR oriented paths go here
     path('cars/', views.CarListView.as_view(), name='cars'),
