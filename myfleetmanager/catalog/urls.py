@@ -5,15 +5,18 @@ from . import views
 
 from .views import OwnerCreateView, owner_success_view, register_view, edit_footer_content 
 from .views import user_list, add_user, edit_user, delete_user
-from .views import feedback_view, feedback_list_view, feedback_success_view
+from .views import feedback_view, feedback_list_view, feedback_success_view, delete_feedback
 
 # URL Patterns fall under here
 urlpatterns = [
     path('', views.home_page, name='index'), #homepage path
+
     path('edit-footer/', edit_footer_content, name='edit_footer_content'), #edit footer content
+
+    # feedback oriented paths go here
     path('feedback/', feedback_view, name='feedback'),
     path('feedback/success/', feedback_success_view, name='feedback_success'),
-    path('admin/feedback/', feedback_list_view, name='feedback_list'),
+    path('feedback/delete/<int:feedback_id>/', delete_feedback, name='delete_feedback'),
 
     #CAR oriented paths go here
     path('cars/', views.CarListView.as_view(), name='cars'),
@@ -34,6 +37,7 @@ urlpatterns = [
 
     # Admin Paths go here
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin/feedback/', feedback_list_view, name='feedback_list'),
 
     # Mechanics Paths go here
     path('mechanics/dashboard/', views.mechanic_dashboard, name='mechanics_dashboard'),

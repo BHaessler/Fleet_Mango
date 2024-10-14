@@ -303,6 +303,15 @@ def feedback_success_view(request):
     return render(request, 'page_management/feedback_success.html')
 
 @login_required
+@user_passes_test(is_admin)  # Ensure only admins can access this view
+def delete_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, pk=feedback_id)
+    if request.method == "POST":
+        feedback.delete()
+        return redirect('feedback_list')  # Redirect to the feedback list or another appropriate page
+    return render(request, 'page_management/delete_feedback.html', {'feedback': feedback})
+
+@login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def feedback_list_view(request):
     feedbacks = Feedback.objects.all()
