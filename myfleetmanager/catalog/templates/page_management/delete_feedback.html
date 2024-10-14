@@ -1,0 +1,11 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Delete Feedback</h1>
+    <p>Are you sure you want to delete the feedback from {{ feedback.user.username }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm Deletion</button>
+        <a href="{% url 'feedback_list' %}">Cancel</a>
+    </form>
+{% endblock %}

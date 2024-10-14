@@ -3,7 +3,7 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
-from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
+from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent, Feedback
 
 from collections import defaultdict
 
@@ -21,8 +21,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 # Form imports
-from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
-from .forms import FooterContentForm, UserManagementForm
+from .forms import UserRegisterForm, OwnerForm, UserManagementForm
+from .forms import FooterContentForm, FeedbackForm
 
 
 # Views go under here
@@ -123,7 +123,6 @@ class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
 
-
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
@@ -136,7 +135,7 @@ def admin_dashboard(request):
         'footer_content': footer_content,
         # Add other relevant data for admins
     }
-    return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
+    return render(request, 'dashboards/admin_dashboard.html', context)  # Ensure this matches your template path
 
 @login_required
 @user_passes_test(is_admin)
@@ -244,7 +243,7 @@ def mechanic_dashboard(request):
         'num_visits':num_visits
         # Add other relevant data for customers
     }
-    return render(request, 'catalog/mechanic_dashboard.html')  # Ensure this matches your template path
+    return render(request, 'dashboards/mechanic_dashboard.html')  # Ensure this matches your template path
 
 """Customer separation"""
 def is_customer(user):
@@ -271,7 +270,7 @@ def customer_dashboard(request):
         'num_visits':num_visits
     }
     
-    return render(request, 'catalog/customer_dashboard.html', context)
+    return render(request, 'dashboards/customer_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
@@ -288,7 +287,73 @@ def edit_footer_content(request):
 
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
-    
+def feedback_view(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user  # Set the user if logged in
+            feedback.save()
+            return redirect('feedback_success')  # Redirect after saving
+    else:
+        form = FeedbackForm()
+    return render(request, 'page_management/feedback_form.html', {'form': form})
+
+def feedback_success_view(request):
+    return render(request, 'page_management/feedback_success.html')
+
+@login_required
+@user_passes_test(is_admin)  # Ensure only admins can access this view
+def delete_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, pk=feedback_id)
+    if request.method == "POST":
+        feedback.delete()
+        return redirect('feedback_list')  # Redirect to the feedback list or another appropriate page
+    return render(request, 'page_management/delete_feedback.html', {'feedback': feedback})
+
+@login_required
+@user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
+def resolve_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, pk=feedback_id)
+    feedback.resolved = True
+    feedback.save()
+    return redirect('feedback_list')  # Redirect back to the feedback list
+
+@login_required
+@user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
+def feedback_list_view(request):
+    users = User.objects.all()
+    categories = Feedback.CATEGORY_CHOICES
+    selected_user = request.GET.get('user', None)
+    selected_category = request.GET.get('category', None)
+
+    feedback_queryset = Feedback.objects.all()
+
+    if selected_user:
+        try:
+            selected_user = int(selected_user)
+            feedback_queryset = feedback_queryset.filter(user_id=selected_user)
+        except ValueError:
+            selected_user = None
+
+    if selected_category:
+        feedback_queryset = feedback_queryset.filter(category=selected_category)
+
+    # Separate feedback into resolved and unresolved
+    unresolved_feedback = feedback_queryset.filter(resolved=False)
+    resolved_feedback = feedback_queryset.filter(resolved=True)
+
+    context = {
+        'unresolved_feedback': unresolved_feedback,
+        'resolved_feedback': resolved_feedback,
+        'users': users,
+        'categories': categories,
+        'selected_user': selected_user,
+        'selected_category': selected_category,
+    }
+
+    return render(request, 'page_management/feedback_list.html', context)
+
 # Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):

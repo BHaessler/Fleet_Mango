@@ -14,7 +14,7 @@ body {
   text-decoration: none;      /* Remove underline */
   border: none;               /* Remove default border */
   border-radius: 5px;        /* Rounded corners */
-  padding: 10px 20px;        /* Padding */
+  padding: 10px 10px;        /* Padding */
   font-size: 16px;           /* Font size */
   cursor: pointer;            /* Pointer cursor */
   transition: background-color 0.3s; /* Smooth transition for hover effect */
@@ -29,6 +29,18 @@ body {
 .dashboard_button:focus {
   outline: none;             /* Remove outline */
   box-shadow: 0 0 5px #1e2731; /* Add shadow for focus effect */
+}
+
+.dashboard_button_delete {
+  background-color: #693333; /* Button color */
+  color: white;              /* Text color */
+  text-decoration: none;      /* Remove underline */
+  border: none;               /* Remove default border */
+  border-radius: 5px;        /* Rounded corners */
+  padding: 10px 10px;        /* Padding */
+  font-size: 16px;           /* Font size */
+  cursor: pointer;            /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 /* Layout */
@@ -120,8 +132,7 @@ body {
   color: white;
 }
 
-.plate_button,
-.owner_button {
+.plate_button, .owner_button {
   display: inline-block;
   padding: 5px 10px;
   border-radius: 5px;
@@ -147,6 +158,26 @@ body {
 .owner_button:hover {
   background-color: #01463b;
   color: white;
+}
+
+/*Tables*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #f5f5f5;
 }
 
 

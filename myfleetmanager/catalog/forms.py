@@ -4,7 +4,7 @@ import datetime  # for checking renewal date range.
 from django.contrib.auth.models import User, Group
 
 from django import forms
-from .models import Owner, FooterContent
+from .models import Owner, FooterContent, Feedback
 
 
 #Classes go here
@@ -12,6 +12,7 @@ class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'password']  # Include other fields as necessary
+
 
 class UserManagementForm(forms.ModelForm):
     password = forms.CharField(
@@ -66,3 +67,14 @@ class FooterContentForm(forms.ModelForm):
     class Meta:
         model = FooterContent
         fields = ['about_us', 'contact_email', 'contact_phone']
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        fields = ['content', 'category']  # Include the new category field
+
+        # adds help texts 
+        widgets = {
+            'content': forms.Textarea(attrs={'placeholder': 'Your feedback here...'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+        }
