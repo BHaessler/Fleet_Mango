@@ -143,13 +143,14 @@ def admin_dashboard(request):
 def user_list(request):
     users = User.objects.all()
     user_details = None  # Initialize to None
+    num_visits = increment_page_visits(request, 'user_list')
 
     # Check if a user ID is passed in the request (for viewing details)
     user_id = request.GET.get('user_id')
     if user_id:
         user_details = get_object_or_404(User, pk=user_id)
 
-    return render(request, 'user_management/user_list.html', {'users': users, 'user_details': user_details})
+    return render(request, 'user_management/user_list.html', {'users': users, 'user_details': user_details, 'num_visits': num_visits})
 
 
 @login_required
