@@ -323,11 +323,16 @@ def feedback_list_view(request):
 
     # Filter by selected user if provided
     if selected_user:
-        feedback_queryset = feedback_queryset.filter(user_id=selected_user)
+        try:
+            selected_user = int(selected_user)  # Convert to int if it's not None
+            feedback_queryset = feedback_queryset.filter(user_id=selected_user)
+        except ValueError:
+            selected_user = None  # Reset if conversion fails
 
     # Filter by selected category if provided
     if selected_category:
         feedback_queryset = feedback_queryset.filter(category=selected_category)
+
     context = {
         'feedback_list': feedback_queryset,
         'users': users,
@@ -335,7 +340,7 @@ def feedback_list_view(request):
         'selected_user': selected_user,
         'selected_category': selected_category,
     }
-    
+
     return render(request, 'page_management/feedback_list.html', context)
 
 # Class based views go under here
