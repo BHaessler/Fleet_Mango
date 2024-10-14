@@ -4,18 +4,26 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
-from .forms import FooterContentForm
 
-from django.views import generic
-from django.views.generic import ListView,DetailView,TemplateView
+from collections import defaultdict
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required, user_passes_test
+
+from django.views import generic
+from django.views.generic import ListView,DetailView,TemplateView
+from django.views.generic.edit import CreateView
+
+from django.http import JsonResponse
+
+from django.shortcuts import get_object_or_404
 
 # Form imports
 from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
+from .forms import FooterContentForm, UserManagementForm
+
 
 # Views go under here
 # function based views go here
@@ -106,6 +114,7 @@ def register_view(request):
     }
     return render(request, 'registration/register.html', context)
 
+
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
@@ -113,6 +122,7 @@ def is_admin(user):
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -127,6 +137,93 @@ def admin_dashboard(request):
         # Add other relevant data for admins
     }
     return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
+
+@login_required
+@user_passes_test(is_admin)
+def user_list(request):
+    users = User.objects.all()
+    user_details = None  # Initialize to None
+    num_visits = increment_page_visits(request, 'user_list')
+
+    # Check if a user ID is passed in the request (for viewing details)
+    user_id = request.GET.get('user_id')
+    if user_id:
+        user_details = get_object_or_404(User, pk=user_id)
+
+    return render(request, 'user_management/user_list.html', {'users': users, 'user_details': user_details, 'num_visits': num_visits})
+
+
+@login_required
+@user_passes_test(is_admin)
+def add_user(request):
+    if request.method == "POST":
+        form = UserManagementForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Save the user first
+
+            # Check for existing owner
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            phone_num = request.POST.get('phone_num')
+
+            owner, created = Owner.objects.get_or_create(
+                first_name=first_name,
+                last_name=last_name,
+                phone_num=phone_num,
+                defaults={'user': user}
+            )
+
+            if not created:
+                # If the owner already exists, you might want to update or handle it
+                # For example, you can assign the user to the existing owner
+                owner.user = user
+                owner.save()
+
+            return redirect('user_list')  # Redirect after saving
+    else:
+        form = UserManagementForm()
+    return render(request, 'user_management/add_user.html', {'form': form})
+
+@login_required
+@user_passes_test(is_admin)
+def edit_user(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.method == "POST":
+        form = UserManagementForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user_list')
+    else:
+        form = UserManagementForm(instance=user)
+        # Pre-populate the groups in the form
+        form.fields['groups'].initial = user.groups.all()  # Set the initial groups
+    return render(request, 'user_management/edit_user.html', {'form': form})
+
+
+@login_required
+@user_passes_test(is_admin)
+def delete_user(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    if request.method == "POST":
+        user.delete()
+        return redirect('user_list')
+    return render(request, 'user_management/delete_user.html', {'user': user})
+
+
+@login_required
+@user_passes_test(is_admin)
+def user_detail(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+
+    num_visits = increment_page_visits(request, 'user_detail') 
+    footer_content = FooterContent.objects.first()  # Fetch footer content if needed
+
+    context = {
+        'user': user,
+        'num_visits': num_visits,
+        'footer_content': footer_content,
+    }
+    return render(request, 'user_management/user_detail.html', context)
 
 
 """Mechanics Separation"""
@@ -179,7 +276,7 @@ def customer_dashboard(request):
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
 def edit_footer_content(request):
-    footer_content = get_object_or_404(FooterContent)
+    footer_content, created = FooterContent.objects.get_or_create(pk=1)  # Assuming only one instance is needed
 
     if request.method == "POST":
         form = FooterContentForm(request.POST, instance=footer_content)
@@ -189,8 +286,9 @@ def edit_footer_content(request):
     else:
         form = FooterContentForm(instance=footer_content)
 
-    return render(request, 'catalog/edit_footer_content.html', {'form': form})
+    return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
+    
 # Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):

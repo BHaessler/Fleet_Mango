@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1>Admin Dashboard</h1>
-<p>Welcome to the admin dashboard. Here you can manage everything.</p>
+<p>Welcome to the admin dashboard for the shop manager. Here you can manage everything.</p>
 
 <a href="{% url 'edit_footer_content' %}" class="dashboard_button">Edit Page Footer</a>
+<a href="{% url 'user_list' %}" class="dashboard_button">User Management</a>
 {% endblock %}

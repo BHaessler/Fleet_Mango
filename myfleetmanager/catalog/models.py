@@ -124,7 +124,6 @@ class Owner(models.Model):
         """String for representing the Model object."""
         return f'{self.last_name}, {self.first_name}'
 
-
 class FooterContent(models.Model):
     about_us = models.TextField(help_text="Brief description of your company or website.")
     contact_email = models.EmailField(help_text="Contact email address.")

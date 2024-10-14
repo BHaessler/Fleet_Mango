@@ -1,7 +1,7 @@
 #imports go here
 import datetime  # for checking renewal date range.
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from django import forms
 from .models import Owner, FooterContent
@@ -12,6 +12,36 @@ class UserRegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'password']  # Include other fields as necessary
+
+class UserManagementForm(forms.ModelForm):
+    password = forms.CharField(
+        required=False,  # Make this field optional
+        widget=forms.PasswordInput,
+    )
+    groups = forms.ModelChoiceField(
+        queryset=Group.objects.all(),
+        required=False,
+        empty_label="Select a group",
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'groups']  # Include groups in the fields
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        # Check if the password field is not empty
+        if self.cleaned_data['password']:
+            user.set_password(self.cleaned_data['password'])  # Only set if a new password is provided
+        if commit:
+            user.save()
+        # Assign the user to the selected group(s)
+        # Ensure we pass a list to the set() method
+            if self.cleaned_data['groups']:
+                user.groups.set([self.cleaned_data['groups']])  # Wrap in a list
+            else:
+                user.groups.clear()  # Clear groups if none selected
+        return user
 
 class OwnerForm(forms.ModelForm):
     class Meta:
