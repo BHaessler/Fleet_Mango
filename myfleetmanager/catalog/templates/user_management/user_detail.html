@@ -1,9 +1,0 @@
-{% extends "base_generic.html" %}
-
-{% block content %}
-<h1>User Details</h1>
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-<p>Groups: {{ user.groups.all|join:", " }}</p>
-<a href="{% url 'user_list' %}">Back to User List</a>
-{% endblock %}

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Everything after here I have added
     'catalog.apps.CatalogConfig',
+    'django_extensions', #for url debugging 
 ]
 
 MIDDLEWARE = [

@@ -7,15 +7,18 @@ from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
 
 from collections import defaultdict
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from django.views import generic
 from django.views.generic import ListView,DetailView,TemplateView
 from django.views.generic.edit import CreateView
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import JsonResponse
+
+from django.shortcuts import get_object_or_404
 
 # Form imports
 from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
@@ -112,7 +115,6 @@ def register_view(request):
     return render(request, 'registration/register.html', context)
 
 
-
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
@@ -136,13 +138,19 @@ def admin_dashboard(request):
     }
     return render(request, 'catalog/admin_dashboard.html', context)  # Ensure this matches your template path
 
-
 @login_required
 @user_passes_test(is_admin)
 def user_list(request):
     users = User.objects.all()
+    user_details = None  # Initialize to None
 
-    return render(request, 'user_management/user_list.html', {'users': users})
+    # Check if a user ID is passed in the request (for viewing details)
+    user_id = request.GET.get('user_id')
+    if user_id:
+        user_details = get_object_or_404(User, pk=user_id)
+
+    return render(request, 'user_management/user_list.html', {'users': users, 'user_details': user_details})
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -205,6 +213,7 @@ def delete_user(request, user_id):
 @user_passes_test(is_admin)
 def user_detail(request, user_id):
     user = get_object_or_404(User, pk=user_id)
+
     num_visits = increment_page_visits(request, 'user_detail') 
     footer_content = FooterContent.objects.first()  # Fetch footer content if needed
 
