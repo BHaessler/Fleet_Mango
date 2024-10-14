@@ -335,6 +335,7 @@ def feedback_list_view(request):
         'selected_user': selected_user,
         'selected_category': selected_category,
     }
+    
     return render(request, 'page_management/feedback_list.html', context)
 
 # Class based views go under here
