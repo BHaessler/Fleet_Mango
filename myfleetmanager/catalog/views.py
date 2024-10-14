@@ -314,18 +314,26 @@ def delete_feedback(request, feedback_id):
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def feedback_list_view(request):
-    category_filter = request.GET.get('category', None)
-    feedback_list = Feedback.objects.all()
+    users = User.objects.all()  # Get all users
+    categories = Feedback.CATEGORY_CHOICES  # Get all category choices
+    selected_user = request.GET.get('user', None)
+    selected_category = request.GET.get('category', None)
 
-    if category_filter:
-        feedback_list = feedback_list.filter(category=category_filter)
+    feedback_queryset = Feedback.objects.all()
 
-    categories = Feedback.CATEGORY_CHOICES  # Assuming CATEGORY_CHOICES is defined in your Feedback model
+    # Filter by selected user if provided
+    if selected_user:
+        feedback_queryset = feedback_queryset.filter(user_id=selected_user)
 
+    # Filter by selected category if provided
+    if selected_category:
+        feedback_queryset = feedback_queryset.filter(category=selected_category)
     context = {
-        'feedback_list': feedback_list,
+        'feedback_list': feedback_queryset,
+        'users': users,
         'categories': categories,
-        'selected_category': category_filter,
+        'selected_user': selected_user,
+        'selected_category': selected_category,
     }
     return render(request, 'page_management/feedback_list.html', context)
 
