@@ -3,7 +3,7 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
-from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
+from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent, Feedback
 
 from collections import defaultdict
 
@@ -297,7 +297,7 @@ def feedback_view(request):
             if request.user.is_authenticated:
                 feedback.user = request.user
             feedback.save()
-            return redirect('feedback_success')  # Redirect to a success page
+            return redirect('customer_dashboard')  # Redirect to a success page
     else:
         form = FeedbackForm()
     
