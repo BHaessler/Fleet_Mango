@@ -190,7 +190,7 @@ def edit_user(request, user_id):
         form.fields['groups'].initial = user.groups.all()  # Set the initial groups
     return render(request, 'user_management/edit_user.html', {'form': form})
 
-    
+
 @login_required
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
@@ -199,6 +199,21 @@ def delete_user(request, user_id):
         user.delete()
         return redirect('user_list')
     return render(request, 'user_management/delete_user.html', {'user': user})
+
+
+@login_required
+@user_passes_test(is_admin)
+def user_detail(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    num_visits = increment_page_visits(request, 'user_detail') 
+    footer_content = FooterContent.objects.first()  # Fetch footer content if needed
+
+    context = {
+        'user': user,
+        'num_visits': num_visits,
+        'footer_content': footer_content,
+    }
+    return render(request, 'user_management/user_detail.html', context)
 
 
 """Mechanics Separation"""

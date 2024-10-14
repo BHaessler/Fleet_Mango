@@ -8,8 +8,10 @@
     {% for user in users %}
         <li>
             {{ user.username }} 
+            <a href="{% url 'user_detail' user.id %}">View Details</a>
             <a href="{% url 'edit_user' user.id %}">Edit</a>
             <a href="{% url 'delete_user' user.id %}">Delete</a>
+            
         </li>
     {% endfor %}
 </ul>
