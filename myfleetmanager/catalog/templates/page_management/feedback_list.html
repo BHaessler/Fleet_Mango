@@ -4,7 +4,7 @@
 
 {% block content %}
     <h1>Feedback List</h1>
-
+    <hr>
     <form method="GET">
         <label for="user">Filter by User:</label>
         <select name="user" id="user" onchange="this.form.submit()">
@@ -27,9 +27,9 @@
         </select>
     </form>
 
-    
     <div>
-        <h2>Active Filters:</h2>
+        <p></p>
+        <h5>Active Filters:</h5>
         <ul>
             {% if selected_user %}
                 <li>User: {{ users|get_item:selected_user }}</li>
@@ -42,7 +42,8 @@
             {% endif %}
         </ul>
     </div>
-
+    <hr>
+    <h2>Unresolved Feedback</h2>
     <table>
         <thead>
             <tr>
@@ -54,19 +55,52 @@
             </tr>
         </thead>
         <tbody>
-            {% for feedback in feedback_list %}
+            {% for feedback in unresolved_feedback %}
                 <tr>
                     <td>{{ feedback.user.username }}</td>
                     <td>{{ feedback.content }}</td>
                     <td>{{ feedback.category|capfirst }}</td>
                     <td>{{ feedback.created_at }}</td>
                     <td>
-                        <a href="{% url 'delete_feedback' feedback.id %}">Delete</a>
+                        <form action="{% url 'resolve_feedback' feedback.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="dashboard_button">Mark as Resolved</button>
+                        </form>
+                        <form action="{% url 'delete_feedback' feedback.id %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="dashboard_button_delete">Delete</button>
+                        </form>
                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5">No feedback available.</td>
+                    <td colspan="5">No unresolved feedback available.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr>
+    <h2>Resolved Feedback</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Message</th>
+                <th>Category</th>
+                <th>Date Submitted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in resolved_feedback %}
+                <tr>
+                    <td>{{ feedback.user.username }}</td>
+                    <td>{{ feedback.content }}</td>
+                    <td>{{ feedback.category|capfirst }}</td>
+                    <td>{{ feedback.created_at }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No resolved feedback available.</td>
                 </tr>
             {% endfor %}
         </tbody>

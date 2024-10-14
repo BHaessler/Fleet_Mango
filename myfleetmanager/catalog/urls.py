@@ -5,7 +5,7 @@ from . import views
 
 from .views import OwnerCreateView, owner_success_view, register_view, edit_footer_content 
 from .views import user_list, add_user, edit_user, delete_user
-from .views import feedback_view, feedback_list_view, feedback_success_view, delete_feedback
+from .views import feedback_view, feedback_list_view, feedback_success_view, delete_feedback, resolve_feedback
 
 # URL Patterns fall under here
 urlpatterns = [
@@ -17,6 +17,7 @@ urlpatterns = [
     path('feedback/', feedback_view, name='feedback'),
     path('feedback/success/', feedback_success_view, name='feedback_success'),
     path('feedback/delete/<int:feedback_id>/', delete_feedback, name='delete_feedback'),
+    path('feedback/resolve/<int:feedback_id>/', resolve_feedback, name='resolve_feedback'),
 
     #CAR oriented paths go here
     path('cars/', views.CarListView.as_view(), name='cars'),

@@ -313,28 +313,39 @@ def delete_feedback(request, feedback_id):
 
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
+def resolve_feedback(request, feedback_id):
+    feedback = get_object_or_404(Feedback, pk=feedback_id)
+    feedback.resolved = True
+    feedback.save()
+    return redirect('feedback_list')  # Redirect back to the feedback list
+
+@login_required
+@user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def feedback_list_view(request):
-    users = User.objects.all()  # Get all users
-    categories = Feedback.CATEGORY_CHOICES  # Get all category choices
+    users = User.objects.all()
+    categories = Feedback.CATEGORY_CHOICES
     selected_user = request.GET.get('user', None)
     selected_category = request.GET.get('category', None)
 
     feedback_queryset = Feedback.objects.all()
 
-    # Filter by selected user if provided
     if selected_user:
         try:
-            selected_user = int(selected_user)  # Convert to int if it's not None
+            selected_user = int(selected_user)
             feedback_queryset = feedback_queryset.filter(user_id=selected_user)
         except ValueError:
-            selected_user = None  # Reset if conversion fails
+            selected_user = None
 
-    # Filter by selected category if provided
     if selected_category:
         feedback_queryset = feedback_queryset.filter(category=selected_category)
 
+    # Separate feedback into resolved and unresolved
+    unresolved_feedback = feedback_queryset.filter(resolved=False)
+    resolved_feedback = feedback_queryset.filter(resolved=True)
+
     context = {
-        'feedback_list': feedback_queryset,
+        'unresolved_feedback': unresolved_feedback,
+        'resolved_feedback': resolved_feedback,
         'users': users,
         'categories': categories,
         'selected_user': selected_user,

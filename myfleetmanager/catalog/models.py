@@ -144,7 +144,8 @@ class Feedback(models.Model):
     content = models.TextField()
     category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='general')  # New field for category
     created_at = models.DateTimeField(auto_now_add=True)
-
+    resolved = models.BooleanField(default=False)
+    
     def __str__(self):
         return f'Feedback from {self.user.username if self.user else "Anonymous"}'
 # There should always be a trailing white space in these files 

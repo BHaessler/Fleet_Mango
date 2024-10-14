@@ -5,16 +5,34 @@
 <a href="{% url 'add_user' %}" class="dashboard_button">Add User</a>
 <p></p>
 <hr> <!-- A line before user list -->
-<ul>
-    {% for user in users %}
-        <li>
-            {{ user.username }} 
-            <a href="?user_id={{ user.id }}">View Details</a>
-            <a href="{% url 'edit_user' user.id %}">Edit</a>
-            <a href="{% url 'delete_user' user.id %}">Delete</a>
-        </li>
-    {% endfor %}
-</ul>
+
+<table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    <a href="?user_id={{ user.id }}" class="dashboard_button">View Details</a>
+                    <a href="{% url 'edit_user' user.id %}" class="dashboard_button">Edit</a>
+                    <form action="{% url 'delete_user' user.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="dashboard_button_delete">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="2">No users available.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% if user_details %}
 <hr> <!-- A line before user details -->
