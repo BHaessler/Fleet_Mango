@@ -4,18 +4,23 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 # Everything under here I added
 from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent
-from .forms import FooterContentForm, UserManagementForm
+
+from collections import defaultdict
+
 
 from django.views import generic
 from django.views.generic import ListView,DetailView,TemplateView
+from django.views.generic.edit import CreateView
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Form imports
 from .forms import UserRegisterForm, OwnerForm  # the form is named owner form
+from .forms import FooterContentForm, UserManagementForm
+
 
 # Views go under here
 # function based views go here
@@ -136,6 +141,7 @@ def admin_dashboard(request):
 @user_passes_test(is_admin)
 def user_list(request):
     users = User.objects.all()
+
     return render(request, 'user_management/user_list.html', {'users': users})
 
 @login_required
@@ -169,36 +175,6 @@ def add_user(request):
         form = UserManagementForm()
     return render(request, 'user_management/add_user.html', {'form': form})
 
-def add_user(request):
-    if request.method == "POST":
-        form = UserManagementForm(request.POST)
-        if form.is_valid():
-            user = form.save()  # Save the user first
-
-            # Check for existing owner
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            phone_num = request.POST.get('phone_num')
-
-            owner, created = Owner.objects.get_or_create(
-                first_name=first_name,
-                last_name=last_name,
-                phone_num=phone_num,
-                defaults={'user': user}
-            )
-
-            if not created:
-                # If the owner already exists, you might want to update or handle it
-                # For example, you can assign the user to the existing owner
-                owner.user = user
-                owner.save()
-
-            return redirect('user_list')  # Redirect after saving
-    else:
-        form = UserManagementForm()
-    return render(request, 'user_management/add_user.html', {'form': form})
-
-
 @login_required
 @user_passes_test(is_admin)
 def edit_user(request, user_id):
@@ -210,9 +186,11 @@ def edit_user(request, user_id):
             return redirect('user_list')
     else:
         form = UserManagementForm(instance=user)
+        # Pre-populate the groups in the form
+        form.fields['groups'].initial = user.groups.all()  # Set the initial groups
     return render(request, 'user_management/edit_user.html', {'form': form})
 
-
+    
 @login_required
 @user_passes_test(is_admin)
 def delete_user(request, user_id):
