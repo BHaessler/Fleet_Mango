@@ -2,9 +2,9 @@
 
 
 from django.contrib import admin
-from django.contrib.auth.models import Group  # Import Group model
+from django.contrib.auth.models import Group, User 
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
+
 
 #Everything under here I added
 from django import forms
