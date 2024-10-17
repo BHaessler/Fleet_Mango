@@ -59,7 +59,7 @@ class CarInstance(models.Model):
     # Foreign Key used because car can only have one owner, but owners can have multiple cars.
     # Owner as a string rather than object because it hasn't been declared yet in file.
     vinNum = models.CharField(
-        max_length=17,
+        max_length=17, blank=True, null=True,
         help_text="Enter the Vehicle Identification Number (VIN) for this vehicle. It must be exactly 17 characters."
     )
     

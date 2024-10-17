@@ -21,7 +21,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
 # Form imports
-from .forms import UserRegisterForm, OwnerForm, UserManagementForm
+from .forms import UserRegisterForm, OwnerForm, UserManagementForm, CarInstanceForm
 from .forms import FooterContentForm, FeedbackForm
 
 
@@ -271,6 +271,24 @@ def customer_dashboard(request):
     }
     
     return render(request, 'dashboards/customer_dashboard.html', context)
+
+@login_required
+@user_passes_test(lambda user: is_customer(user) or is_admin(user) or is_mechanic(user))
+def edit_car_instance(request, car_id):
+    car_instance = get_object_or_404(CarInstance, pk=car_id)
+    
+    # Optionally: Check if the user is the owner, admin, or mechanic
+    if not (car_instance.owner.user == request.user or is_admin(request.user) or is_mechanic(request.user)):
+        return redirect('unauthorized_access')  # Redirect if the user is unauthorized
+
+    if request.method == "POST":
+        form = CarInstanceForm(request.POST, instance=car_instance)
+        if form.is_valid():
+            form.save()  # Save the updated car instance
+            return redirect('cars')  # Redirect after saving
+    else:
+        form = CarInstanceForm(instance=car_instance)  # Populate the form with existing data
+    return render(request, 'car_management/edit_car.html', {'form': form})
 
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view

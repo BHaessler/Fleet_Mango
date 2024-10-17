@@ -34,6 +34,7 @@ urlpatterns = [
     #CAR oriented paths go here
     path('cars/', views.CarListView.as_view(), name='cars'),
     path('car/<int:pk>/', views.CarDetailView.as_view(), name='car-detail'),
+    path('car/edit/<int:car_id>/', views.edit_car_instance, name='edit_car_instance'),
 
     #OWNER oriented paths go here
     path('owner/create/', OwnerCreateView.as_view(), name='owner-create'),
