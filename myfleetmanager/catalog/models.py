@@ -1,5 +1,6 @@
 """Models for the catalog application."""
 
+from django.core.exceptions import ValidationError
 from django.db import models
 # Everything below here I have added
 from django.urls import reverse # Used in get_absolute_url() to get URL for specified ID
@@ -140,11 +141,17 @@ class Owner(models.Model):
     
     phone_num = models.CharField(
         max_length=10,
-        help_text="Enter the owner's phone number (e.g., 1234567890). Maximum 10 digits."
+        null=True, 
+        blank=True,
+        default='Unknown"',
+        help_text="Enter the owner's phone number without dashes (e.g., 1234567890). Maximum 10 digits."
     )
     
     address = models.TextField(
         max_length=300,
+        null=True, 
+        blank=True,
+        default='Unknown',
         help_text="Enter the owner's address. This can be a full street address."
     )
     
@@ -171,6 +178,7 @@ class Owner(models.Model):
         """Custom validation to ensure the phone number is valid."""
         if not self.phone_num.isdigit():
             raise ValidationError('Phone number must contain only digits.')
+
         if len(self.phone_num) < 10:
             raise ValidationError('Phone number must be at least 10 digits long.')
 

@@ -26,6 +26,11 @@
       {% else %}
         <p>This owner does not have insurance.</p>
       {% endif %}
+
+    <hr>
+    <a href="{% url 'edit_owner' owner.pk  %}" class="dashboard_button_delete">Edit Owner</a>
+
+    </div>
 {% endblock %}
 
 # There should always be a trailing white space in these files 

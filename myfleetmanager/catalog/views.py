@@ -7,10 +7,14 @@ from collections import defaultdict
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError  # Add this line
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.views import generic
 from django.views.generic import ListView, DetailView, TemplateView, CreateView
+from django.views.generic.edit import UpdateView
 
 # Local application imports
 from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent, Feedback
@@ -449,6 +453,19 @@ class OwnerCreateView(CreateView):
     def form_invalid(self, form):
         # Handle invalid form submission (e.g., return to the same page with errors)
         return super().form_invalid(form)
+
+
+class OwnerEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Owner
+    form_class = OwnerForm
+    template_name = "owner_management/owner_edit.html"
+
+    def test_func(self):
+        owner = self.get_object()
+        return is_admin(self.request.user) or owner.user == self.request.user
+
+    def get_success_url(self):
+        return reverse('owner-detail', args=[self.object.pk])
 
 
 """CUSTOMER related classes"""

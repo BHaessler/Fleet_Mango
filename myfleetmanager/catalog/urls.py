@@ -5,6 +5,7 @@ from . import views
 
 from .views import (
     OwnerCreateView, 
+    OwnerEditView,
     owner_success_view, 
     register_view, 
     edit_footer_content,
@@ -40,6 +41,7 @@ urlpatterns = [
     path('owner/create/', OwnerCreateView.as_view(), name='owner-create'),
     path('owner/success/', owner_success_view, name='owner-success'),  # Success URL
     path('owner/<int:pk>/', views.OwnerDetailView.as_view(), name='owner-detail'),
+    path('owner/edit/<int:pk>/', OwnerEditView.as_view(), name='edit_owner'),
     path('owners/', views.OwnerListView.as_view(), name='owners'),
     
     #Separational View paths go here
