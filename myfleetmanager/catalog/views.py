@@ -27,6 +27,7 @@ from .forms import (
 
 # Views go under here
 # function based views go here
+
 def home_page(request):
     if request.user.is_authenticated:
         num_visits = increment_page_visits(request, 'home')
