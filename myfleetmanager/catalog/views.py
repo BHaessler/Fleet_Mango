@@ -1,29 +1,29 @@
 """ Declares all of the views the pages will reach for"""
 
-from django.shortcuts import render, redirect
-from django.shortcuts import get_object_or_404
-# Everything under here I added
-from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent, Feedback
-
+# Standard library imports
 from collections import defaultdict
 
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
+# Django core imports
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required, user_passes_test
-
-from django.views import generic
-from django.views.generic import ListView,DetailView,TemplateView
-from django.views.generic.edit import CreateView
-
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import generic
+from django.views.generic import ListView, DetailView, TemplateView, CreateView
 
-from django.shortcuts import get_object_or_404
+# Local application imports
+from .models import Owner, VehicleType, CarMake, CarInstance, FooterContent, Feedback
+from .forms import (
+    UserRegisterForm,
+    OwnerForm,
+    UserManagementForm,
+    CarInstanceForm,
+    FooterContentForm,
+    FeedbackForm,
+)
 
-# Form imports
-from .forms import UserRegisterForm, OwnerForm, UserManagementForm, CarInstanceForm
-from .forms import FooterContentForm, FeedbackForm
-
+#--------------------------------------------------------------------------------------------------
 
 # Views go under here
 # function based views go here
@@ -119,9 +119,11 @@ def register_view(request):
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
 
+
 class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -136,6 +138,7 @@ def admin_dashboard(request):
         # Add other relevant data for admins
     }
     return render(request, 'dashboards/admin_dashboard.html', context)  # Ensure this matches your template path
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -229,9 +232,11 @@ def user_detail(request, user_id):
 def is_mechanic(user):
     return user.groups.filter(name='Mechanics').exists() # Or check for a specific group
 
+
 class MechanicsRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_mechanic(self.request.user)
+
 
 @login_required
 @user_passes_test(is_mechanic)
@@ -245,13 +250,16 @@ def mechanic_dashboard(request):
     }
     return render(request, 'dashboards/mechanic_dashboard.html')  # Ensure this matches your template path
 
+
 """Customer separation"""
 def is_customer(user):
     return user.groups.filter(name='Customer').exists()
 
+
 class CustomerRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_customer(self.request.user)
+
 
 @login_required
 @user_passes_test(is_customer)
@@ -272,6 +280,7 @@ def customer_dashboard(request):
     
     return render(request, 'dashboards/customer_dashboard.html', context)
 
+
 @login_required
 @user_passes_test(lambda user: is_customer(user) or is_admin(user) or is_mechanic(user))
 def edit_car_instance(request, car_id):
@@ -290,6 +299,7 @@ def edit_car_instance(request, car_id):
         form = CarInstanceForm(instance=car_instance)  # Populate the form with existing data
     return render(request, 'car_management/edit_car.html', {'form': form})
 
+
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
 def edit_footer_content(request):
@@ -305,6 +315,7 @@ def edit_footer_content(request):
 
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
+
 def feedback_view(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
@@ -317,8 +328,10 @@ def feedback_view(request):
         form = FeedbackForm()
     return render(request, 'page_management/feedback_form.html', {'form': form})
 
+
 def feedback_success_view(request):
     return render(request, 'page_management/feedback_success.html')
+
 
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
@@ -329,6 +342,7 @@ def delete_feedback(request, feedback_id):
         return redirect('feedback_list')  # Redirect to the feedback list or another appropriate page
     return render(request, 'page_management/delete_feedback.html', {'feedback': feedback})
 
+
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
 def resolve_feedback(request, feedback_id):
@@ -336,6 +350,7 @@ def resolve_feedback(request, feedback_id):
     feedback.resolved = True
     feedback.save()
     return redirect('feedback_list')  # Redirect back to the feedback list
+
 
 @login_required
 @user_passes_test(lambda user: user.groups.filter(name='Admin').exists())
@@ -372,6 +387,7 @@ def feedback_list_view(request):
 
     return render(request, 'page_management/feedback_list.html', context)
 
+
 # Class based views go under here
 """CAR related classes"""
 class CarListView(ListView):
@@ -383,6 +399,7 @@ class CarListView(ListView):
         context['num_visits'] = increment_page_visits(self.request, 'car_list')
         return context
 
+
 class CarDetailView(DetailView):
     model = CarInstance
 
@@ -390,6 +407,7 @@ class CarDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['num_visits'] = increment_page_visits(self.request, f'car_detail_{self.object.pk}')
         return context
+
 
 """OWNER related classes"""
 class OwnerListView(ListView):
@@ -401,6 +419,7 @@ class OwnerListView(ListView):
         context['num_visits'] = increment_page_visits(self.request, 'owner_list')
         return context
 
+
 class OwnerDetailView(DetailView):
     model = Owner
     
@@ -408,6 +427,7 @@ class OwnerDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['num_visits'] = increment_page_visits(self.request, f'owner_detail_{self.object.pk}')
         return context
+
 
 class OwnerCreateView(CreateView):
     model = Owner
