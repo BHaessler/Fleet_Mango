@@ -1,0 +1,62 @@
+{% extends "base_generic.html" %}  <!-- Extend your base template -->
+
+{% block content %}
+<h2>Edit Car Information</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div>
+        <label for="{{ form.car.id_for_label }}">{{ form.car.label }}</label>
+        {{ form.car }}
+        {{ form.car.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.vinNum.id_for_label }}">{{ form.vinNum.label }}</label>
+        {{ form.vinNum }}
+        {{ form.vinNum.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.modelYear.id_for_label }}">{{ form.modelYear.label }}</label>
+        {{ form.modelYear }}
+        {{ form.modelYear.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.color.id_for_label }}">{{ form.color.label }}</label>
+        {{ form.color }}
+        {{ form.color.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.license_plate.id_for_label }}">{{ form.license_plate.label }}</label>
+        {{ form.license_plate }}
+        {{ form.license_plate.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.due_back.id_for_label }}">{{ form.due_back.label }}</label>
+        {{ form.due_back }}
+        {{ form.due_back.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.mechanic_stat.id_for_label }}">{{ form.mechanic_stat.label }}</label>
+        {{ form.mechanic_stat }}
+        {{ form.mechanic_stat.errors }}
+    </div>
+
+    <div>
+        <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+        {{ form.status }}
+        {{ form.status.errors }}
+    </div>
+
+    <button type="submit">Save Changes</button>
+</form>
+
+<a href="{% url 'cars' %}">Cancel</a>
+{% endblock %}

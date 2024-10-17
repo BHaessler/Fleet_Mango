@@ -4,7 +4,7 @@ import datetime  # for checking renewal date range.
 from django.contrib.auth.models import User, Group
 
 from django import forms
-from .models import Owner, FooterContent, Feedback
+from .models import Owner, FooterContent, Feedback, CarInstance
 
 
 #Classes go here
@@ -63,6 +63,21 @@ class OwnerForm(forms.ModelForm):
 
         return cleaned_data
 
+class CarInstanceForm(forms.ModelForm):
+    class Meta:
+        model = CarInstance
+        fields = ['car', 'vinNum', 'modelYear', 'color', 'license_plate', 'due_back', 'mechanic_stat', 'status']
+
+        widgets = {
+            'due_back': forms.DateInput(attrs={'type': 'date'}),
+            'color': forms.TextInput(attrs={'placeholder': 'e.g., Red, Blue'}),
+            'vinNum': forms.TextInput(attrs={'placeholder': 'Enter VIN'}),
+            'license_plate': forms.TextInput(attrs={'placeholder': 'Enter License Plate'}),
+            'modelYear': forms.TextInput(attrs={'placeholder': 'e.g., 2020'}),
+        }
+
+
+# Related to the page 
 class FooterContentForm(forms.ModelForm):
     class Meta:
         model = FooterContent
