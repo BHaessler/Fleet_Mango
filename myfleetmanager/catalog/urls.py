@@ -6,6 +6,8 @@ from . import views
 from .views import (
     OwnerCreateView, 
     OwnerEditView,
+    CarListView,
+    CustomerCarListView,
     owner_success_view, 
     register_view, 
     edit_footer_content,
@@ -33,7 +35,8 @@ urlpatterns = [
     path('feedback/resolve/<int:feedback_id>/', resolve_feedback, name='resolve_feedback'),
 
     #CAR oriented paths go here
-    path('cars/', views.CarListView.as_view(), name='cars'),
+    path('cars/', CarListView.as_view(), name='cars'),
+    path('my-cars/', CustomerCarListView.as_view(), name='customer_car_list'),
     path('car/<int:pk>/', views.CarDetailView.as_view(), name='car-detail'),
     path('car/edit/<int:car_id>/', views.edit_car_instance, name='edit_car_instance'),
 

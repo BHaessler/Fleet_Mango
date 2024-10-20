@@ -245,114 +245,6 @@ def user_detail(request, user_id):
     }
     return render(request, 'user_management/user_detail.html', context)
 
-
-"""Mechanics Separation"""
-def is_mechanic(user):
-    return user.groups.filter(name='Mechanics').exists() # Or check for a specific group
-
-
-class MechanicsRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return is_mechanic(self.request.user)
-
-
-@login_required
-@user_passes_test(is_mechanic)
-def mechanic_dashboard(request):
-    # Add any customer-specific data to the context
-    num_visits = increment_page_visits(request, 'mechanic_dashboard')
-    context = {
-        'user': request.user,
-        'num_visits':num_visits
-        # Add other relevant data for customers
-    }
-    return render(request, 'dashboards/mechanic_dashboard.html')  # Ensure this matches your template path
-
-
-"""Customer separation"""
-def is_customer(user):
-    return user.groups.filter(name='Customer').exists()
-
-
-class CustomerRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return is_customer(self.request.user)
-
-
-@login_required
-@user_passes_test(is_customer)
-def customer_dashboard(request):
-    # Get the owner associated with the logged-in user
-    owner = get_object_or_404(Owner, user=request.user)
-    num_visits = increment_page_visits(request, 'customer_dashboard')
-    # Fetch all cars that belong to this owner directly from the database
-    customer_cars = CarInstance.objects.filter(owner=owner)
-
-    # Add any customer-specific data to the context
-    context = {
-        'user': request.user,
-        'owner': owner,
-        'customer_cars': customer_cars,
-        'num_visits':num_visits
-    }
-    
-    return render(request, 'dashboards/customer_dashboard.html', context)
-
-
-@login_required
-@user_passes_test(lambda user: is_customer(user) or is_admin(user) or is_mechanic(user))
-def edit_car_instance(request, car_id):
-    car_instance = get_object_or_404(CarInstance, pk=car_id)
-    
-    # Optionally: Check if the user is the owner, admin, or mechanic
-    if not (car_instance.owner.user == request.user or is_admin(request.user) or is_mechanic(request.user)):
-        return redirect('unauthorized_access')  # Redirect if the user is unauthorized
-
-    if request.method == "POST":
-        form = CarInstanceForm(request.POST, instance=car_instance)
-        if form.is_valid():
-            form.save()  # Save the updated car instance
-            return redirect('cars')  # Redirect after saving
-    else:
-        form = CarInstanceForm(instance=car_instance)  # Populate the form with existing data
-    return render(request, 'car_management/edit_car.html', {'form': form})
-
-
-@login_required
-@user_passes_test(is_admin)  # Ensure only admins can access this view
-def edit_footer_content(request):
-    footer_content, created = FooterContent.objects.get_or_create(pk=1)  # Assuming only one instance is needed
-
-    if request.method == "POST":
-        form = FooterContentForm(request.POST, instance=footer_content)
-        if form.is_valid():
-            form.save()
-            return redirect('admin_dashboard')  # Redirect after saving
-    else:
-        form = FooterContentForm(instance=footer_content)
-
-    return render(request, 'page_management/edit_footer_content.html', {'form': form})
-
-
-@login_required
-@user_passes_test(is_customer)  # Restrict to customers
-def feedback_view(request):
-    if request.method == 'POST':
-        form = FeedbackForm(request.POST)
-        if form.is_valid():
-            feedback = form.save(commit=False)
-            feedback.user = request.user  # Set the user if logged in
-            feedback.save()
-            return redirect('feedback_success')  # Redirect after saving
-    else:
-        form = FeedbackForm()
-    return render(request, 'page_management/feedback_form.html', {'form': form})
-
-
-def feedback_success_view(request):
-    return render(request, 'page_management/feedback_success.html')
-
-
 @login_required
 @user_passes_test(is_admin)  # Ensure only admins can access this view
 def delete_feedback(request, feedback_id):
@@ -408,20 +300,138 @@ def feedback_list_view(request):
     return render(request, 'page_management/feedback_list.html', context)
 
 
+@login_required
+@user_passes_test(is_admin)  # Ensure only admins can access this view
+def edit_footer_content(request):
+    footer_content, created = FooterContent.objects.get_or_create(pk=1)  # Assuming only one instance is needed
+
+    if request.method == "POST":
+        form = FooterContentForm(request.POST, instance=footer_content)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_dashboard')  # Redirect after saving
+    else:
+        form = FooterContentForm(instance=footer_content)
+
+    return render(request, 'page_management/edit_footer_content.html', {'form': form})
+
+
+"""Mechanics Separation"""
+def is_mechanic(user):
+    return user.groups.filter(name='Mechanics').exists() # Or check for a specific group
+
+
+class MechanicsRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_mechanic(self.request.user)
+
+
+@login_required
+@user_passes_test(is_mechanic)
+def mechanic_dashboard(request):
+    # Add any mechanic-specific data to the context
+    num_visits = increment_page_visits(request, 'mechanic_dashboard')
+    context = {
+        'user': request.user,
+        'num_visits':num_visits
+        # Add other relevant data for mechanics
+    }
+    return render(request, 'dashboards/mechanic_dashboard.html')  # Ensure this matches your template path
+
+
+def is_admin_or_mechanic(user):
+    return user.groups.filter(name='Admin').exists() or user.groups.filter(name='Mechanics').exists()
+
+
+"""Customer separation"""
+def is_customer(user):
+    return user.groups.filter(name='Customer').exists()
+
+
+class CustomerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_customer(self.request.user)
+
+
+@login_required
+@user_passes_test(is_customer)
+def customer_dashboard(request):
+    # Get the owner associated with the logged-in user
+    owner = get_object_or_404(Owner, user=request.user)
+    num_visits = increment_page_visits(request, 'customer_dashboard')
+    # Fetch all cars that belong to this owner directly from the database
+    customer_cars = CarInstance.objects.filter(owner=owner)
+
+    # Add any customer-specific data to the context
+    context = {
+        'user': request.user,
+        'owner': owner,
+        'customer_cars': customer_cars,
+        'num_visits':num_visits
+    }
+    
+    return render(request, 'dashboards/customer_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(lambda user: is_customer(user) or is_admin(user) or is_mechanic(user))
+def edit_car_instance(request, car_id):
+    car_instance = get_object_or_404(CarInstance, pk=car_id)
+    
+    # Optionally: Check if the user is the owner, admin, or mechanic
+    if not (car_instance.owner.user == request.user or is_admin(request.user) or is_mechanic(request.user)):
+        return redirect('unauthorized_access')  # Redirect if the user is unauthorized
+
+    if request.method == "POST":
+        form = CarInstanceForm(request.POST, instance=car_instance)
+        if form.is_valid():
+            form.save()  # Save the updated car instance
+            return redirect('cars')  # Redirect after saving
+    else:
+        form = CarInstanceForm(instance=car_instance)  # Populate the form with existing data
+    return render(request, 'car_management/edit_car.html', {'form': form})
+
+@login_required
+@user_passes_test(is_customer)  # Restrict to customers
+def feedback_view(request):
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save(commit=False)
+            feedback.user = request.user  # Set the user if logged in
+            feedback.save()
+            return redirect('feedback_success')  # Redirect after saving
+    else:
+        form = FeedbackForm()
+    return render(request, 'page_management/feedback_form.html', {'form': form})
+
+
+def feedback_success_view(request):
+    return render(request, 'page_management/feedback_success.html')
+
+
 # Class based views go under here
 """CAR related classes"""
-class CarListView(ListView):
+class CarListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CarInstance
     context_object_name = 'car_list'
+    template_name = 'car_management/car_list.html'
+
+    def test_func(self):
+        return is_admin_or_mechanic(self.request.user)
+        
+    def get_queryset(self):
+        return CarInstance.objects.all()  # Show all cars to admins and mechanics
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['num_visits'] = increment_page_visits(self.request, 'car_list')
+        context['num_visits'] = increment_page_visits(self.request, 'cars')
         return context
 
 
 class CarDetailView(DetailView):
     model = CarInstance
+    template_name = 'car_management/car_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -433,6 +443,7 @@ class CarDetailView(DetailView):
 class OwnerListView(UserPassesTestMixin, ListView):
     model = Owner
     context_object_name = 'owner_list'
+    template_name = 'owner_management/owner_list.html'
     
     def test_func(self):
         return is_admin(self.request.user)
@@ -445,6 +456,7 @@ class OwnerListView(UserPassesTestMixin, ListView):
 
 class OwnerDetailView(DetailView):
     model = Owner
+    template_name = 'owner_management/owner_detail.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -455,7 +467,7 @@ class OwnerDetailView(DetailView):
 class OwnerCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Owner
     form_class = OwnerForm
-    template_name = 'Owner_details.html'
+    template_name = 'owner_management/owner_details.html'
     
     def test_func(self):
         return is_admin(self.request.user)
@@ -492,7 +504,7 @@ class OwnerEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 """CUSTOMER related classes"""
 class CustomerCarListView(LoginRequiredMixin, CustomerRequiredMixin, ListView):
     model = CarInstance
-    template_name = 'catalog/customer_car_list.html'
+    template_name = 'car_management/customer_car_list.html'
     context_object_name = 'customer_cars'
 
     def get_queryset(self):
