@@ -58,10 +58,11 @@
 
 ## Class-Based Views
 1. Car List View
-- No specific permissions needed; accessible to all users.
+- Uses the @user_passes_test(is_admin) decorator.
 
 2. Car Detail View
-- No specific permissions needed; accessible to all users.
+- Restricts views to only owners of their cars, however admins and mechanics
+can see all the cars and all their details
 
 3. Owner List View
 - Uses UserPassesTestMixin and test_func for admin checks.

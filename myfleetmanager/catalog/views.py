@@ -25,8 +25,7 @@ from .forms import (
     CarInstanceForm,
     FooterContentForm,
     FeedbackForm,
-)
-
+    )
 #--------------------------------------------------------------------------------------------------
 
 # Views go under here
@@ -69,6 +68,45 @@ def increment_page_visits(request, page_name):
     num_visits += 1
     request.session[session_key] = num_visits
     return num_visits
+
+
+# Defining page separation by group classes here 
+class AdminRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_admin(self.request.user)
+
+    def handle_no_permission(self):
+        return redirect('unauthorized_access')
+
+
+class MechanicsRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_mechanic(self.request.user)
+
+
+class CustomerRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return is_customer(self.request.user)
+
+
+class IsOwnerOrAdminMixin(UserPassesTestMixin):
+    def test_func(self):
+        car_instance = self.get_object()
+        return car_instance.owner.user == self.request.user or is_admin(self.request.user)
+
+
+class IsOwnerAdminOrMechanicMixin(UserPassesTestMixin):
+    def test_func(self):
+        car_instance = self.get_object()
+        return (
+            car_instance.owner.user == self.request.user or 
+            is_admin(self.request.user) or 
+            is_mechanic(self.request.user)
+        )
+
+    def handle_no_permission(self):
+        return redirect('unauthorized_access')
+
 
 # Defining separation of users here
 def login_view(request):
@@ -133,14 +171,6 @@ def register_view(request):
 """Admin Separation"""
 def is_admin(user):
     return user.groups.filter(name='Admin').exists() # Or check for a specific group
-
-
-class AdminRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return is_admin(self.request.user)
-
-    def handle_no_permission(self):
-        return redirect('unauthorized_access')
 
 
 @login_required
@@ -246,7 +276,7 @@ def user_detail(request, user_id):
     return render(request, 'user_management/user_detail.html', context)
 
 @login_required
-@user_passes_test(is_admin)  # Ensure only admins can access this view
+@user_passes_test(is_admin)  
 def delete_feedback(request, feedback_id):
     feedback = get_object_or_404(Feedback, pk=feedback_id)
     if request.method == "POST":
@@ -301,7 +331,7 @@ def feedback_list_view(request):
 
 
 @login_required
-@user_passes_test(is_admin)  # Ensure only admins can access this view
+@user_passes_test(is_admin)  
 def edit_footer_content(request):
     footer_content, created = FooterContent.objects.get_or_create(pk=1)  # Assuming only one instance is needed
 
@@ -319,11 +349,6 @@ def edit_footer_content(request):
 """Mechanics Separation"""
 def is_mechanic(user):
     return user.groups.filter(name='Mechanics').exists() # Or check for a specific group
-
-
-class MechanicsRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return is_mechanic(self.request.user)
 
 
 @login_required
@@ -346,11 +371,6 @@ def is_admin_or_mechanic(user):
 """Customer separation"""
 def is_customer(user):
     return user.groups.filter(name='Customer').exists()
-
-
-class CustomerRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return is_customer(self.request.user)
 
 
 @login_required
@@ -391,6 +411,7 @@ def edit_car_instance(request, car_id):
         form = CarInstanceForm(instance=car_instance)  # Populate the form with existing data
     return render(request, 'car_management/edit_car.html', {'form': form})
 
+
 @login_required
 @user_passes_test(is_customer)  # Restrict to customers
 def feedback_view(request):
@@ -429,7 +450,7 @@ class CarListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
-class CarDetailView(DetailView):
+class CarDetailView(LoginRequiredMixin, IsOwnerAdminOrMechanicMixin, DetailView):
     model = CarInstance
     template_name = 'car_management/car_detail.html'
 
