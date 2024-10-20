@@ -43,7 +43,17 @@ def home_page(request):
             'num_owners': num_owners,
             'num_visits': num_visits,
         }
-        return render(request, 'index.html', context=context)
+
+        # Redirect to respective dashboards based on user group
+        if request.user.groups.filter(name='Customer').exists():
+            return redirect('customer_dashboard')  
+        elif request.user.groups.filter(name='Admin').exists():
+            return redirect('admin_dashboard')  
+        elif request.user.groups.filter(name='Mechanics').exists():
+            return redirect('mechanics_dashboard') 
+        else:
+            return render(request, 'index.html', context)
+
     else:
         num_visits = increment_page_visits(request, 'no_auth_home')
         return render(request, 'no_auth_home.html', {'num_visits': num_visits})
@@ -324,6 +334,8 @@ def edit_footer_content(request):
     return render(request, 'page_management/edit_footer_content.html', {'form': form})
 
 
+@login_required
+@user_passes_test(is_customer)  # Restrict to customers
 def feedback_view(request):
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
@@ -440,10 +452,13 @@ class OwnerDetailView(DetailView):
         return context
 
 
-class OwnerCreateView(CreateView):
+class OwnerCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Owner
     form_class = OwnerForm
     template_name = 'Owner_details.html'
+    
+    def test_func(self):
+        return is_admin(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
