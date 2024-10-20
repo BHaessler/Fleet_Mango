@@ -129,6 +129,9 @@ class AdminRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return is_admin(self.request.user)
 
+    def handle_no_permission(self):
+        return redirect('unauthorized_access')
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -415,10 +418,13 @@ class CarDetailView(DetailView):
 
 
 """OWNER related classes"""
-class OwnerListView(ListView):
+class OwnerListView(UserPassesTestMixin, ListView):
     model = Owner
     context_object_name = 'owner_list'
     
+    def test_func(self):
+        return is_admin(self.request.user)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['num_visits'] = increment_page_visits(self.request, 'owner_list')
