@@ -52,7 +52,7 @@ def home_page(request):
         elif request.user.groups.filter(name='Mechanics').exists():
             return redirect('mechanics_dashboard') 
         else:
-            return render(request, 'index.html', context)
+            return render(request, 'no_auth_home.html', context)
 
     else:
         num_visits = increment_page_visits(request, 'no_auth_home')
