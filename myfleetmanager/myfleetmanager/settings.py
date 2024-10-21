@@ -135,3 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/customer/'  # Redirect customers here after login
 LOGOUT_REDIRECT_URL = '/'  # This will redirect to the home page
+
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']

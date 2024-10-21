@@ -4,6 +4,7 @@
   <h1>{{ owner.first_name }} {{ owner.last_name }}</h1>
   <div style="margin-left:20px;margin-top:20px">
     <hr>
+    <h5>Car Information</h5>
     <dl> 
       {% for car in owner.carinstance_set.all %}
         <dt><a href="{% url 'car-detail' car.pk %}" class="plate_button">{{ car.license_plate }}</a> 
@@ -26,6 +27,11 @@
       {% else %}
         <p>This owner does not have insurance.</p>
       {% endif %}
+
+    <hr>
+    <a href="{% url 'edit_owner' owner.pk  %}" class="dashboard_button_delete">Edit Owner</a>
+
+    </div>
 {% endblock %}
 
 # There should always be a trailing white space in these files 
