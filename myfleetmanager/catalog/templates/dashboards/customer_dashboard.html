@@ -2,21 +2,26 @@
 
 {% block content %}
 <h1>Welcome back, {{ owner.first_name }} {{ owner.last_name }}!</h1>
-
+<hr>
 <h2>Your Contact Information</h2>
-<p><strong>Phone Number:</strong> {{ owner.phone_num }}</p>
-{% if owner.has_insurance %}
-<p><strong>Insurance Provider:</strong> {{ owner.insurance_provider }}</p>
-<p><strong>Policy Number:</strong> {{ owner.insurance_policy_number }}</p>
-{% else %} 
-<p>Please contact the shop to update your insurance information if needed</p>
-{% endif %}
+    <p><strong>Phone Number:</strong> {{ owner.phone_num }}</p>
+    {% if owner.has_insurance %}
+        <p><strong>Insurance Provider:</strong> {{ owner.insurance_provider }}</p>
+        <p><strong>Policy Number:</strong> {{ owner.insurance_policy_number }}</p>
+    {% else %} 
+        <p>Please contact the shop to update your insurance information if needed</p>
+    {% endif %}
 
+    <a href="{% url 'edit_owner' owner.pk  %}" class="dashboard_button_delete">Edit Personal Information</a>
+    <p></p>
 
+<hr>
 <h2>Your Vehicles</h2>
 <ul>
     {% for car in customer_cars %}
-        <li>{{ car }} - ({{ car.modelYear }})</li>
+    <li>
+        <a href="{{ car.get_absolute_url }}" class="plate_button">{{ car }}</a> - ({{ car.modelYear }})
+    </li>
     {% empty %}
         <li>No vehicles found.</li>
     {% endfor %}

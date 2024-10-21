@@ -185,11 +185,17 @@ def admin_dashboard(request):
     # Add any admin-specific data to the context
     num_visits = increment_page_visits(request, 'admin_dashboard')
     footer_content = FooterContent.objects.first()  # Get the first (and only) footer content
+
+    # Get the counts of cars and owners
+    num_instances = CarInstance.objects.count()  # Count of all car instances
+    num_owners = Owner.objects.count()  # Count of all owners
+
     context = {
         'user': request.user,
         'num_visits': num_visits,
         'footer_content': footer_content,
-        # Add other relevant data for admins
+        'num_instances': num_instances, 
+        'num_owners': num_owners,  
     }
     return render(request, 'dashboards/admin_dashboard.html', context)  # Ensure this matches your template path
 
@@ -529,7 +535,13 @@ class OwnerEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.request.user == owner.user or self.request.user.groups.filter(name='Admin').exists()
 
     def get_success_url(self):
-        return reverse('owner-detail', args=[self.object.pk])  # Redirect to the owner detail page after editing
+        # Check if the user is the owner or an admin
+        if self.request.user == self.get_object().user:
+            return reverse('customer_dashboard')  # Redirect to the owner's dashboard
+        elif self.request.user.groups.filter(name='Admin').exists():
+            owner = self.get_object()
+            return reverse('owner-detail', args=[owner.pk])  # Redirect to the owner list for admins
+        return super().get_success_url()  # Fallback (if needed)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
