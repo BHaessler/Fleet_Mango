@@ -95,6 +95,12 @@ class IsOwnerOrAdminMixin(UserPassesTestMixin):
         return car_instance.owner.user == self.request.user or is_admin(self.request.user)
 
 
+class AdminOrMechanicRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='Admin').exists() or \
+               self.request.user.groups.filter(name='Mechanics').exists()
+
+
 class IsOwnerAdminOrMechanicMixin(UserPassesTestMixin):
     def test_func(self):
         car_instance = self.get_object()
@@ -461,7 +467,7 @@ class CarDetailView(LoginRequiredMixin, IsOwnerAdminOrMechanicMixin, DetailView)
 
 
 """OWNER related classes"""
-class OwnerListView(UserPassesTestMixin, ListView):
+class OwnerListView(LoginRequiredMixin, AdminOrMechanicRequiredMixin, ListView):
     model = Owner
     context_object_name = 'owner_list'
     template_name = 'owner_management/owner_list.html'
@@ -475,10 +481,14 @@ class OwnerListView(UserPassesTestMixin, ListView):
         return context
 
 
-class OwnerDetailView(DetailView):
+class OwnerDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Owner
     template_name = 'owner_management/owner_detail.html'
-    
+
+    def test_func(self):
+        owner = self.get_object()  # Get the owner object
+        return self.request.user == owner.user or self.request.user.groups.filter(name='Admin').exists()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['num_visits'] = increment_page_visits(self.request, f'owner_detail_{self.object.pk}')
@@ -512,17 +522,21 @@ class OwnerCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class OwnerEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Owner
     form_class = OwnerForm
-    template_name = "owner_management/owner_edit.html"
+    template_name = 'owner_management/owner_edit.html'
 
     def test_func(self):
-        owner = self.get_object()
-        return is_admin(self.request.user) or owner.user == self.request.user
+        owner = self.get_object()  # Get the owner object
+        return self.request.user == owner.user or self.request.user.groups.filter(name='Admin').exists()
 
     def get_success_url(self):
-        return reverse('owner-detail', args=[self.object.pk])
+        return reverse('owner-detail', args=[self.object.pk])  # Redirect to the owner detail page after editing
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['num_visits'] = increment_page_visits(self.request, f'owner_edit_{self.object.pk}')
+        return context
 
 
-"""CUSTOMER related classes"""
 class CustomerCarListView(LoginRequiredMixin, CustomerRequiredMixin, ListView):
     model = CarInstance
     template_name = 'car_management/customer_car_list.html'

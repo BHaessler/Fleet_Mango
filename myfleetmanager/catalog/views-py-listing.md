@@ -65,16 +65,16 @@
 can see all the cars and all their details
 
 3. Owner List View
-- Uses UserPassesTestMixin and test_func for admin checks.
+- Restricts the view to only admins and the mechanics.
 
 4. Owner Detail View
-- No specific permissions needed; accessible to all users.
+- Restricts the view to only admins and the owners themselves.
 
 5. Owner Create View
 - Use @user_passes_test(is_admin) or AdminRequiredMixin.
 
 6. Owner Edit View
-- Uses UserPassesTestMixin for permissions.
+- Restricts the view to only admins and the owners themselves.
 
 7. Customer Car List View
-- Uses CustomerRequiredMixin to restrict access.
+- Uses CustomerRequiredMixin to restrict access to only customers personal cars.
