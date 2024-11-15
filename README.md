@@ -1,4 +1,6 @@
-# Fleet_Mango
+# ANY FURTHER PROGRESS WILL BE MADE ON THIS PROJECT https://github.com/BHaessler/Fleet_Mango-API
+## The Fleet-Mango - Primitive Project does not use an API
+# Fleet_Mango - PRIMITIVE
 A simple database, with GUI webframe to manage a fleet of vehicles or other objects with alterations. 
 
 ## Usage: 
